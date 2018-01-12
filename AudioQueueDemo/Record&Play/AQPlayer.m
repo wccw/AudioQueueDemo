@@ -28,18 +28,6 @@ typedef struct {
 
 @implementation AQPlayer
 
-static void HandleOutputBuffer (void *aqData, AudioQueueRef inAQ, AudioQueueBufferRef inBuffer) {
-    AQPlayerState *pAqData = (AQPlayerState *)aqData;
-    if (pAqData->mIsRunning == 0) {
-        return;
-    }
-    
-    UInt32 numPackets = pAqData->mNumPacketsToRead;
-    if (numPackets > 0) {
-        AudioQueueEnqueueBuffer(pAqData->mQueue, inBuffer, pAqData->mPacketsDescs ? numPackets : 0, pAqData->mPacketsDescs);
-    }
-}
-
 -(void)setBufferSize {
     static const int maxBufferSize = 0x50000;
     static const int minBufferSize = 0x40000;
@@ -65,7 +53,20 @@ static void HandleOutputBuffer (void *aqData, AudioQueueRef inAQ, AudioQueueBuff
         AudioQueueAllocateBuffer(aqData.mQueue, aqData.bufferByteSize, &aqData.mBuffers[i]);
         HandleOutputBuffer(&aqData, aqData.mQueue, aqData.mBuffers[i]);
     }
+    AudioQueueNewOutput(&aqData.mDataFormat, HandleOutputBuffer, &aqData, CFRunLoopGetCurrent(), kCFRunLoopCommonModes, 0, &aqData.mQueue);
     AudioQueueStart(aqData.mQueue, NULL);
+}
+
+static void HandleOutputBuffer (void *aqData, AudioQueueRef inAQ, AudioQueueBufferRef inBuffer) {
+    AQPlayerState *pAqData = (AQPlayerState *)aqData;
+    if (pAqData->mIsRunning == 0) {
+        return;
+    }
+    
+    UInt32 numPackets = pAqData->mNumPacketsToRead;
+    if (numPackets > 0) {
+        AudioQueueEnqueueBuffer(pAqData->mQueue, inBuffer, pAqData->mPacketsDescs ? numPackets : 0, pAqData->mPacketsDescs);
+    }
 }
 
 @end
