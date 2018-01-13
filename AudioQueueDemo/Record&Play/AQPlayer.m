@@ -11,62 +11,103 @@
 
 static const int kNumberBuffers = 3;
 
-typedef struct {
-    AudioStreamBasicDescription  mDataFormat;
-    AudioQueueRef                mQueue;
-    AudioQueueBufferRef          mBuffers[kNumberBuffers];
-    UInt32                       bufferByteSize;
-    UInt32                       mNumPacketsToRead;
-    AudioStreamPacketDescription *mPacketsDescs;
-    BOOL                         mIsRunning;
-} AQPlayerState;
-
 @interface AQPlayer() {
-    AQPlayerState aqData;
+    AudioStreamBasicDescription audioFormat;
+    AudioQueueRef               audioQueue;
+    AudioQueueBufferRef         audioBuffers[kNumberBuffers];
+    BOOL                        audioBufferUsed[kNumberBuffers];
+    UInt32                      audioBufferSize;
+    NSLock                      *syncLock;
 }
 @end
 
 @implementation AQPlayer
 
+
+-(instancetype)init {
+    if (self = [super init]) {
+        syncLock = [[NSLock alloc]init];
+        [self setAudioFormat];
+        [self setBufferSize];
+        [self setAudioQueue];
+    }
+    return self;
+}
+
+-(void)setAudioFormat {
+    audioFormat.mFormatID = kAudioFormatLinearPCM;
+    audioFormat.mSampleRate = 44100.0;
+    audioFormat.mFramesPerPacket = 1;
+    audioFormat.mChannelsPerFrame = 1;
+    audioFormat.mBitsPerChannel = 16;
+    audioFormat.mBytesPerFrame = audioFormat.mBitsPerChannel * audioFormat.mChannelsPerFrame / 8;
+    audioFormat.mBytesPerPacket = audioFormat.mFramesPerPacket * audioFormat.mBytesPerFrame;
+    audioFormat.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
+}
+
 -(void)setBufferSize {
     static const int maxBufferSize = 0x50000;
     static const int minBufferSize = 0x40000;
     UInt32 maxPacketSize = 10;
-    if (aqData.mDataFormat.mFramesPerPacket != 0) {
-        Float64 numPacketsForTime = aqData.mDataFormat.mSampleRate / aqData.mDataFormat.mFramesPerPacket * 0.5;
-        aqData.bufferByteSize = numPacketsForTime * maxPacketSize;
+    if (audioFormat.mFramesPerPacket != 0) {
+        Float64 numPacketsForTime = audioFormat.mSampleRate / audioFormat.mFramesPerPacket * 0.5;
+        audioBufferSize = numPacketsForTime * maxPacketSize;
     } else {
-        aqData.bufferByteSize = maxBufferSize > maxPacketSize ? maxBufferSize : maxPacketSize;
+        audioBufferSize = maxBufferSize > maxPacketSize ? maxBufferSize : maxPacketSize;
     }
     
-    if (aqData.bufferByteSize > maxBufferSize && aqData.bufferByteSize > maxPacketSize) {
-        aqData.bufferByteSize = maxPacketSize;
+    if (audioBufferSize > maxBufferSize && audioBufferSize > maxPacketSize) {
+        audioBufferSize = maxPacketSize;
     } else {
-        if (aqData.bufferByteSize < minBufferSize) {
-            aqData.bufferByteSize = minBufferSize;
+        if (audioBufferSize < minBufferSize) {
+            audioBufferSize = minBufferSize;
         }
     }
 }
 
--(void)startPlayer {
+-(void)setAudioQueue {
+    AudioQueueNewOutput(&audioFormat, HandleOutputBuffer , (__bridge void*)self, nil, 0, 0, &audioQueue);
+    AudioQueueSetParameter(audioQueue, kAudioQueueParam_Volume, 1.0);
+    
     for (int i = 0; i < kNumberBuffers; ++i) {
-        AudioQueueAllocateBuffer(aqData.mQueue, aqData.bufferByteSize, &aqData.mBuffers[i]);
-        HandleOutputBuffer(&aqData, aqData.mQueue, aqData.mBuffers[i]);
+        AudioQueueAllocateBuffer(audioQueue, audioBufferSize, &audioBuffers[i]);
     }
-    AudioQueueNewOutput(&aqData.mDataFormat, HandleOutputBuffer, &aqData, CFRunLoopGetCurrent(), kCFRunLoopCommonModes, 0, &aqData.mQueue);
-    AudioQueueStart(aqData.mQueue, NULL);
+    AudioQueueStart(audioQueue, NULL);
 }
 
-static void HandleOutputBuffer (void *aqData, AudioQueueRef inAQ, AudioQueueBufferRef inBuffer) {
-    AQPlayerState *pAqData = (AQPlayerState *)aqData;
-    if (pAqData->mIsRunning == 0) {
-        return;
+static void HandleOutputBuffer(void *inUserData, AudioQueueRef inAQ, AudioQueueBufferRef inBuffer) {
+    AudioQueueEnqueueBuffer(inAQ, inBuffer, 0, NULL);
+}
+
+-(void)playWithData:(NSData *)data {
+    [syncLock lock];
+    int i = 0;
+    
+    while (true) {
+        if (!audioBufferUsed[i]) {
+            audioBufferUsed[i] = true;
+            break;
+        } else {
+            i++;
+            if (i >= kNumberBuffers) {
+                i = 0;
+            }
+        }
     }
     
-    UInt32 numPackets = pAqData->mNumPacketsToRead;
-    if (numPackets > 0) {
-        AudioQueueEnqueueBuffer(pAqData->mQueue, inBuffer, pAqData->mPacketsDescs ? numPackets : 0, pAqData->mPacketsDescs);
-    }
+    audioBuffers[i]->mAudioDataByteSize = (UInt32)data.length;
+    memcpy(audioBuffers[i]->mAudioData, data.bytes, data.length);
+    AudioQueueEnqueueBuffer(audioQueue, audioBuffers[i], 0, NULL);
+    [syncLock unlock];
 }
+
+-(void)stop {
+    if (audioQueue != nil) {
+        AudioQueueStop(audioQueue, true);
+    }
+    audioQueue = nil;
+    syncLock = nil;
+}
+
 
 @end

@@ -10,4 +10,6 @@
 
 @interface AQPlayer : NSObject
 
+-(void)playWithData:(NSData *)data;
+
 @end
