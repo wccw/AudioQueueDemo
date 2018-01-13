@@ -8,7 +8,8 @@
 
 #import "ViewController.h"
 #import "AQRecorder.h"
-@interface ViewController ()
+#import "AQPlayer.h"
+@interface ViewController () <recorderDelegate>
 
 @end
 
@@ -18,9 +19,11 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    AQRecorder *recorder = [[AQRecorder alloc]init];
+    AQRecorder *recorder = [[AQRecorder alloc]initWithDelegate:self];
     [recorder beganRecorder];
-    
+}
+
+-(void)recordData:(NSData *)data {
 }
 
 

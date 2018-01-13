@@ -19,21 +19,22 @@ static BOOL audioIsRecording = NO;
     AudioQueueRef               audioQueue;
     UInt32                      audioBufferSize;
 }
+@property (nonatomic, assign) id<recorderDelegate> delegate;
 @end
 
 
 @implementation AQRecorder
 
--(instancetype)init {
+-(instancetype)initWithDelegate:(id<recorderDelegate>)delegate {
     if (self = [super init]) {
-        [self setAudioFormat];
-        [self setBufferSize];
-        [self setAudioQueue];
+        self.delegate = delegate;
+        [self audioConfig];
     }
     return self;
 }
 
--(void)setAudioFormat {
+-(void)audioConfig {
+    //audio format
     audioFormat.mFormatID = kAudioFormatLinearPCM;
     audioFormat.mSampleRate = 44100.0;
     audioFormat.mFramesPerPacket = 1;
@@ -42,6 +43,18 @@ static BOOL audioIsRecording = NO;
     audioFormat.mBytesPerFrame = audioFormat.mBitsPerChannel * audioFormat.mChannelsPerFrame / 8;
     audioFormat.mBytesPerPacket = audioFormat.mFramesPerPacket * audioFormat.mBytesPerFrame;
     audioFormat.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
+    
+    //buffer size
+    [self setBufferSize];
+    
+    //audio queue
+    AudioQueueNewInput(&audioFormat, HandleInputBuffer, (void *)CFBridgingRetain(self), NULL, NULL, 0, &audioQueue);
+    
+    //audio buffers
+    for (int i = 0; i < kNumberBuffers; ++i) {
+        AudioQueueAllocateBuffer(audioQueue, audioBufferSize, &audioBuffers[i]);
+        AudioQueueEnqueueBuffer(audioQueue, audioBuffers[i], 0, NULL);
+    }
 }
 
 - (void)setBufferSize {
@@ -61,13 +74,6 @@ static BOOL audioIsRecording = NO;
     NSLog(@"buffersize:%d",audioBufferSize);
 }
 
--(void)setAudioQueue {
-    AudioQueueNewInput(&audioFormat, HandleInputBuffer, (__bridge void *)(self), NULL, NULL, 0, &audioQueue);
-    for (int i = 0; i < kNumberBuffers; ++i) {
-        AudioQueueAllocateBuffer(audioQueue, audioBufferSize, &audioBuffers[i]);
-        AudioQueueEnqueueBuffer(audioQueue, audioBuffers[i], 0, NULL);
-    }
-}
 
 - (void)beganRecorder {
     audioIsRecording = true;
@@ -82,31 +88,22 @@ static BOOL audioIsRecording = NO;
     }
 }
 
-static void HandleInputBuffer(void                               *inUserData,
-                              AudioQueueRef                      inAQ,
-                              AudioQueueBufferRef                inBuffer,
-                              const AudioTimeStamp               *inStartTime,
-                              UInt32                             inNumPackets,
-                              const AudioStreamPacketDescription *inPacketDesc) {
+static void HandleInputBuffer(void *inUserData, AudioQueueRef inAQ, AudioQueueBufferRef inBuffer, const AudioTimeStamp *inStartTime, UInt32 inNumPackets, const AudioStreamPacketDescription *inPacketDesc) {
     
-    NSData *data = [NSData dataWithBytes:inBuffer->mAudioData length:inBuffer->mAudioDataByteSize];
-    
+    AQRecorder *aqr = (__bridge AQRecorder *)inUserData;
     if (inNumPackets > 0) {
-        NSLog(@"dataLen:%d %d",inBuffer->mAudioDataByteSize,inNumPackets);
-
-        //process audio buffer
-        //NSLog(@"this is audio data");
-        AQRecorder *rec = (__bridge AQRecorder *)inUserData;
-        //[recorder precessData];
-        //NSLog(@"this is audio1 data");
+        [aqr processAudioBuffer:inBuffer];
     }
     if (audioIsRecording) {
          AudioQueueEnqueueBuffer(inAQ, inBuffer, 0, NULL);
     }
 }
 
--(void)precessData {
-    
+- (void)processAudioBuffer:(AudioQueueBufferRef)buffer {
+    NSData *data = [NSData dataWithBytes:buffer->mAudioData length:buffer->mAudioDataByteSize];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(recordData:)]) {
+        [self.delegate recordData:data];
+    }
 }
 
 

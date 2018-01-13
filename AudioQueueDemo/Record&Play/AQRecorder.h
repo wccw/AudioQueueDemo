@@ -8,8 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol recorderDelegate <NSObject>
+-(void)recordData:(NSData *)data;
+@end
+
 @interface AQRecorder : NSObject
-
+- (instancetype)initWithDelegate:(id<recorderDelegate>) delegate;
 - (void)beganRecorder;
-
 @end
