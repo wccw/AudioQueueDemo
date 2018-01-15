@@ -45,7 +45,7 @@ static BOOL audioIsRecording = NO;
     audioFormat.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
     
     //buffer size
-    [self setBufferSize];
+    [self setBufferSizeWithSeconds:KbufferDurationSeconds];
     
     //audio queue
     AudioQueueNewInput(&audioFormat, HandleInputBuffer, (void *)CFBridgingRetain(self), NULL, NULL, 0, &audioQueue);
@@ -57,15 +57,15 @@ static BOOL audioIsRecording = NO;
     }
 }
 
-- (void)setBufferSize {
-    static const int maxBufferSize = 0x50000;
+- (void)setBufferSizeWithSeconds:(float)seconds {
+    static const int maxBufferSize = 2048;
     int maxPacketSize = audioFormat.mBytesPerPacket;
     if (maxPacketSize == 0) {
         UInt32 maxVBRPacketSize = sizeof(maxPacketSize);
         AudioQueueGetProperty(audioQueue, kAudioQueueProperty_MaximumOutputPacketSize, &maxPacketSize, &maxVBRPacketSize);
     }
     
-    Float64 numBytesForTime = audioFormat.mSampleRate * maxPacketSize * KbufferDurationSeconds;
+    Float64 numBytesForTime = audioFormat.mSampleRate * maxPacketSize * seconds;
     if (numBytesForTime < maxBufferSize) {
         audioBufferSize = numBytesForTime;
     } else {

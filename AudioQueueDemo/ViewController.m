@@ -10,7 +10,9 @@
 #import "AQRecorder.h"
 #import "AQPlayer.h"
 @interface ViewController () <recorderDelegate>
-
+{
+    AQPlayer *player;
+}
 @end
 
 @implementation ViewController
@@ -21,9 +23,13 @@
     
     AQRecorder *recorder = [[AQRecorder alloc]initWithDelegate:self];
     [recorder beganRecorder];
+    
+    player = [[AQPlayer alloc]init];
 }
 
 -(void)recordData:(NSData *)data {
+    //NSLog(@"receiveData:%lu",(unsigned long)data.length);
+    [player playWithData:data];
 }
 
 

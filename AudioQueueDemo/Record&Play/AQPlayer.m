@@ -11,6 +11,7 @@
 
 static const int kNumberBuffers = 3;
 
+
 @interface AQPlayer() {
     AudioStreamBasicDescription audioFormat;
     AudioQueueRef               audioQueue;
@@ -18,6 +19,8 @@ static const int kNumberBuffers = 3;
     BOOL                        audioBufferUsed[kNumberBuffers];
     UInt32                      audioBufferSize;
     NSLock                      *syncLock;
+    int                         currentIndex;
+    NSData                      *pcmData;
 }
 @end
 
@@ -27,14 +30,23 @@ static const int kNumberBuffers = 3;
 -(instancetype)init {
     if (self = [super init]) {
         syncLock = [[NSLock alloc]init];
-        [self setAudioFormat];
-        [self setBufferSize];
-        [self setAudioQueue];
+         [self setAudioQueue];
     }
     return self;
 }
 
--(void)setAudioFormat {
+-(void)setAudioQueue {
+    /* AudioQueueNewOutput创建输出音频的AudioQueue
+     * 1.即将播放音频的数据格式
+     * 2.使用完一个缓冲区的回调
+     * 3.用户传入的数据指针，用于传递给回调函数
+     * 4.指明回调时间发生在哪个RunLoop中，为NULL，表明为AudioQueue线程中执行回调，一般传NULL
+     * 5.指明回调时间发生的RunLoop模式，为NULL，表明为kCFRunLoopCommonModes
+     * 6.
+     * 7.AudioQueue的引用实例
+     */
+    audioBufferSize = 3000;
+    
     audioFormat.mFormatID = kAudioFormatLinearPCM;
     audioFormat.mSampleRate = 44100.0;
     audioFormat.mFramesPerPacket = 1;
@@ -43,61 +55,61 @@ static const int kNumberBuffers = 3;
     audioFormat.mBytesPerFrame = audioFormat.mBitsPerChannel * audioFormat.mChannelsPerFrame / 8;
     audioFormat.mBytesPerPacket = audioFormat.mFramesPerPacket * audioFormat.mBytesPerFrame;
     audioFormat.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
-}
-
--(void)setBufferSize {
-    static const int maxBufferSize = 0x50000;
-    static const int minBufferSize = 0x40000;
-    UInt32 maxPacketSize = 10;
-    if (audioFormat.mFramesPerPacket != 0) {
-        Float64 numPacketsForTime = audioFormat.mSampleRate / audioFormat.mFramesPerPacket * 0.5;
-        audioBufferSize = numPacketsForTime * maxPacketSize;
-    } else {
-        audioBufferSize = maxBufferSize > maxPacketSize ? maxBufferSize : maxPacketSize;
-    }
     
-    if (audioBufferSize > maxBufferSize && audioBufferSize > maxPacketSize) {
-        audioBufferSize = maxPacketSize;
-    } else {
-        if (audioBufferSize < minBufferSize) {
-            audioBufferSize = minBufferSize;
-        }
-    }
-}
-
--(void)setAudioQueue {
-    AudioQueueNewOutput(&audioFormat, HandleOutputBuffer , (__bridge void*)self, nil, 0, 0, &audioQueue);
+    AudioQueueNewOutput(&audioFormat, HandleOutputBuffer , (__bridge void*)self, NULL, NULL, 0, &audioQueue);
+    
     AudioQueueSetParameter(audioQueue, kAudioQueueParam_Volume, 1.0);
+    
+    /* 为音频数据开辟缓冲区
+     * 1.AudioQueue的引用实例
+     * 2.开辟缓冲区大小
+     * 3.开辟缓冲区引用实例
+     */
     
     for (int i = 0; i < kNumberBuffers; ++i) {
         AudioQueueAllocateBuffer(audioQueue, audioBufferSize, &audioBuffers[i]);
     }
+    
+    //音频播放
     AudioQueueStart(audioQueue, NULL);
 }
 
 static void HandleOutputBuffer(void *inUserData, AudioQueueRef inAQ, AudioQueueBufferRef inBuffer) {
-    AudioQueueEnqueueBuffer(inAQ, inBuffer, 0, NULL);
+    AQPlayer *player = (__bridge AQPlayer*)inUserData;
+    [player resetBufferState:inAQ withBuffer:inBuffer];
+}
+
+-(void)resetBufferState:(AudioQueueRef)inAQ withBuffer:(AudioQueueBufferRef)inBuffer {
+   
+    for (int i = 0; i < kNumberBuffers; ++i) {
+        NSLog(@"reuseIndex:%d",i);
+        audioBufferUsed[i] = false;
+    }
 }
 
 -(void)playWithData:(NSData *)data {
-    [syncLock lock];
-    int i = 0;
+    pcmData = data;
+    if (pcmData.length <= 0) {
+        return;
+    }
     
+    [syncLock lock];
     while (true) {
-        if (!audioBufferUsed[i]) {
-            audioBufferUsed[i] = true;
+        NSLog(@"currentIndex:%d",currentIndex);
+        if (!audioBufferUsed[currentIndex]) {
+            audioBufferUsed[currentIndex] = true;
             break;
         } else {
-            i++;
-            if (i >= kNumberBuffers) {
-                i = 0;
+            currentIndex++;
+            if (currentIndex >= kNumberBuffers) {
+                currentIndex = 0;
             }
         }
     }
     
-    audioBuffers[i]->mAudioDataByteSize = (UInt32)data.length;
-    memcpy(audioBuffers[i]->mAudioData, data.bytes, data.length);
-    AudioQueueEnqueueBuffer(audioQueue, audioBuffers[i], 0, NULL);
+    audioBuffers[currentIndex]->mAudioDataByteSize = (UInt32)data.length;
+    memcpy(audioBuffers[currentIndex]->mAudioData, data.bytes, data.length);
+    AudioQueueEnqueueBuffer(audioQueue, audioBuffers[currentIndex], 0, NULL);
     [syncLock unlock];
 }
 
