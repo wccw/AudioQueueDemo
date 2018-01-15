@@ -8,9 +8,8 @@
 
 #import "AQPlayer.h"
 #import <AudioToolbox/AudioToolbox.h>
-
+#import <AVFoundation/AVFoundation.h>
 static const int kNumberBuffers = 3;
-
 
 @interface AQPlayer() {
     AudioStreamBasicDescription audioFormat;
@@ -25,7 +24,6 @@ static const int kNumberBuffers = 3;
 @end
 
 @implementation AQPlayer
-
 
 -(instancetype)init {
     if (self = [super init]) {
@@ -45,6 +43,18 @@ static const int kNumberBuffers = 3;
      * 6.
      * 7.AudioQueue的引用实例
      */
+    BOOL ret = [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+    if (!ret) {
+        NSLog(@"设置声音环境失败");
+        return;
+    }
+    
+    ret = [[AVAudioSession sharedInstance] setActive:YES error:nil];
+    if (!ret) {
+        NSLog(@"启动失败");
+        return;
+    }
+    
     audioBufferSize = 3000;
     
     audioFormat.mFormatID = kAudioFormatLinearPCM;
@@ -57,7 +67,6 @@ static const int kNumberBuffers = 3;
     audioFormat.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
     
     AudioQueueNewOutput(&audioFormat, HandleOutputBuffer , (__bridge void*)self, NULL, NULL, 0, &audioQueue);
-    
     AudioQueueSetParameter(audioQueue, kAudioQueueParam_Volume, 1.0);
     
     /* 为音频数据开辟缓冲区
@@ -80,22 +89,36 @@ static void HandleOutputBuffer(void *inUserData, AudioQueueRef inAQ, AudioQueueB
 }
 
 -(void)resetBufferState:(AudioQueueRef)inAQ withBuffer:(AudioQueueBufferRef)inBuffer {
-   
+    if (pcmData.length == 0) {
+        NSLog(@"this is empty data");
+        inBuffer->mAudioDataByteSize = 1;
+        memcpy(inBuffer->mAudioData, "0", 1);
+        AudioQueueEnqueueBuffer(inAQ, inBuffer, 0, NULL);
+    }
+    
     for (int i = 0; i < kNumberBuffers; ++i) {
-        NSLog(@"reuseIndex:%d",i);
-        audioBufferUsed[i] = false;
+        if (inBuffer == audioBuffers[i]) {
+            NSLog(@"index is:%d",i);
+            audioBufferUsed[i] = false;
+        }
     }
 }
 
 -(void)playWithData:(NSData *)data {
+   
+    [syncLock lock];
     pcmData = data;
-    if (pcmData.length <= 0) {
-        return;
+    for (int i = 0; i < kNumberBuffers; i ++) {
+        if (audioBufferUsed[i]) {
+            continue;
+        }
+        audioBuffers[i]->mAudioDataByteSize = (UInt32)data.length;
+        memcpy(audioBuffers[i]->mAudioData, data.bytes, data.length);
+        AudioQueueEnqueueBuffer(audioQueue, audioBuffers[i], 0, nil);
     }
     
-    [syncLock lock];
+    
     while (true) {
-        NSLog(@"currentIndex:%d",currentIndex);
         if (!audioBufferUsed[currentIndex]) {
             audioBufferUsed[currentIndex] = true;
             break;

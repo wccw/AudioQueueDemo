@@ -11,7 +11,7 @@
 #import "AQPlayer.h"
 @interface ViewController () <recorderDelegate>
 {
-    AQPlayer *player;
+    AQRecorder *recorder;
 }
 @end
 
@@ -20,16 +20,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    
-    AQRecorder *recorder = [[AQRecorder alloc]initWithDelegate:self];
+    recorder = [[AQRecorder alloc]initWithDelegate:self];
     [recorder beganRecorder];
-    
-    player = [[AQPlayer alloc]init];
+    [recorder beganPlayer];
 }
 
 -(void)recordData:(NSData *)data {
-    //NSLog(@"receiveData:%lu",(unsigned long)data.length);
-    [player playWithData:data];
+    [recorder playerData:data];
 }
 
 

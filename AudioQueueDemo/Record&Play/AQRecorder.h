@@ -15,4 +15,6 @@
 @interface AQRecorder : NSObject
 - (instancetype)initWithDelegate:(id<recorderDelegate>) delegate;
 - (void)beganRecorder;
+- (void)beganPlayer;
+- (void)playerData:(NSData *)data;
 @end
