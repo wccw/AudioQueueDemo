@@ -17,6 +17,8 @@
 		C61F05E62008493E00EC3B26 /* AudioQueueDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = C61F05E52008493E00EC3B26 /* AudioQueueDemoUITests.m */; };
 		C61F05F62008498F00EC3B26 /* AQPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C61F05F52008498F00EC3B26 /* AQPlayer.m */; };
 		C61F05F92008499D00EC3B26 /* AQRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = C61F05F82008499D00EC3B26 /* AQRecorder.m */; };
+		C622BC3E200CAA7400BEC2E4 /* 浪花一朵朵片段8k16bit单声道.pcm in Resources */ = {isa = PBXBuildFile; fileRef = C622BC3D200CAA7300BEC2E4 /* 浪花一朵朵片段8k16bit单声道.pcm */; };
+		C622BC40200CAA7E00BEC2E4 /* test.pcm in Resources */ = {isa = PBXBuildFile; fileRef = C622BC3F200CAA7E00BEC2E4 /* test.pcm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +60,8 @@
 		C61F05F72008499D00EC3B26 /* AQRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AQRecorder.h; sourceTree = "<group>"; };
 		C61F05F82008499D00EC3B26 /* AQRecorder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AQRecorder.m; sourceTree = "<group>"; };
 		C61F05FB20084B2B00EC3B26 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		C622BC3D200CAA7300BEC2E4 /* 浪花一朵朵片段8k16bit单声道.pcm */ = {isa = PBXFileReference; lastKnownFileType = file; path = "浪花一朵朵片段8k16bit单声道.pcm"; sourceTree = "<group>"; };
+		C622BC3F200CAA7E00BEC2E4 /* test.pcm */ = {isa = PBXFileReference; lastKnownFileType = file; path = test.pcm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +148,8 @@
 		C61F05F32008495F00EC3B26 /* Record&Play */ = {
 			isa = PBXGroup;
 			children = (
+				C622BC3F200CAA7E00BEC2E4 /* test.pcm */,
+				C622BC3D200CAA7300BEC2E4 /* 浪花一朵朵片段8k16bit单声道.pcm */,
 				C61F05F42008498F00EC3B26 /* AQPlayer.h */,
 				C61F05F52008498F00EC3B26 /* AQPlayer.m */,
 				C61F05F72008499D00EC3B26 /* AQRecorder.h */,
@@ -267,8 +273,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				C61F05CE2008493E00EC3B26 /* LaunchScreen.storyboard in Resources */,
+				C622BC3E200CAA7400BEC2E4 /* 浪花一朵朵片段8k16bit单声道.pcm in Resources */,
 				C61F05CB2008493E00EC3B26 /* Assets.xcassets in Resources */,
 				C61F05C92008493D00EC3B26 /* Main.storyboard in Resources */,
+				C622BC40200CAA7E00BEC2E4 /* test.pcm in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
