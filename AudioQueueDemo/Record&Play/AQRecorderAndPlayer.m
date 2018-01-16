@@ -37,19 +37,6 @@ static BOOL audioIsRecording = NO;
 -(void)audioConfig {
     syncLock = [[NSLock alloc]init];
     
-    BOOL ret = [[AVAudioSession sharedInstance]setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionDefaultToSpeaker error:nil];
-
-    if (!ret) {
-        NSLog(@"设置声音环境失败");
-        return;
-    }
-    
-    ret = [[AVAudioSession sharedInstance] setActive:YES error:nil];
-    if (!ret) {
-        NSLog(@"启动失败");
-        return;
-    }
-    
     //audio format
     AudioStreamBasicDescription audioFormat;
     audioFormat.mFormatID = kAudioFormatLinearPCM;

@@ -8,10 +8,13 @@
 
 #import "ViewController.h"
 #import "AQRecorderAndPlayer.h"
+#import <AVFoundation/AVFoundation.h>
 #import "AQPlayer.h"
+#import "AQRecorder.h"
 @interface ViewController ()
 {
     AQRecorderAndPlayer *aqRecorderPlayer;
+    AQRecorder          *aqRecorder;
     AQPlayer            *aqPlayer;
 }
 @end
@@ -20,9 +23,14 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
-    aqRecorderPlayer = [[AQRecorderAndPlayer alloc]init];
-    aqPlayer = [[AQPlayer alloc]init];
+    //Do any additional setup after loading the view, typically from a nib.
+    BOOL success = [[AVAudioSession sharedInstance]setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+    if (!success) {
+        NSLog(@"Audio Session Failed");
+        return;
+    }
+    aqRecorder = [[AQRecorder alloc]init];
+   
 }
 - (IBAction)recorderplayerStart:(id)sender {
     [aqRecorderPlayer beganRecorderPlayer];
@@ -33,19 +41,19 @@
 }
 
 - (IBAction)recorderStart:(id)sender {
-    
+    [aqRecorder startRecorder];
 }
 
 - (IBAction)recorderStop:(id)sender {
-    
+    [aqRecorder stopRecorder];
 }
 
 - (IBAction)playerStart:(id)sender {
-    [aqPlayer startPlayerWithData:nil];
+    
 }
 
 - (IBAction)playerStop:(id)sender {
-    [aqPlayer stopPlayer];
+    
 }
 
 - (void)didReceiveMemoryWarning {

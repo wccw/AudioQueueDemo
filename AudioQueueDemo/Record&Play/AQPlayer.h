@@ -10,7 +10,7 @@
 
 @interface AQPlayer : NSObject
 
--(void)startPlayerWithData:(NSData *)data;
--(void)stopPlayer;
+-(void)startPlay;
+-(void)stopPlay;
 
 @end

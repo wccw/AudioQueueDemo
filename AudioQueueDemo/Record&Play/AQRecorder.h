@@ -11,6 +11,6 @@
 @interface AQRecorder : NSObject
 
 -(void)startRecorder;
--(void)stopPlayer;
+-(void)stopRecorder;
 
 @end

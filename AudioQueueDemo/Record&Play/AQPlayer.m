@@ -11,15 +11,19 @@
 #import <AVFoundation/AVFoundation.h>
 static const int kNumberBuffers = 3;
 
+typedef struct {
+    AudioQueueRef               queue;
+    AudioQueueBufferRef         buffers[kNumberBuffers];
+    AudioStreamBasicDescription format;
+    AudioFileID                 fileId;
+    SInt64                      currentPacket;
+    UInt32                      bufferSize;
+    BOOL                        playing;
+} PlayState;
+
 @interface AQPlayer() {
-    AudioStreamBasicDescription audioFormat;
-    AudioQueueRef               audioPlayerQueue;
-    AudioQueueBufferRef         audioPlayerBuffers[kNumberBuffers];
-    BOOL                        audioBufferUsed[kNumberBuffers];
-    UInt32                      audioBufferSize;
-    NSLock                      *syncLock;
-    int                         currentIndex;
-    NSData                      *pcmData;
+    PlayState playState;
+    CFURLRef  fileURL;
 }
 @end
 
@@ -27,98 +31,72 @@ static const int kNumberBuffers = 3;
 
 -(instancetype)init {
     if (self = [super init]) {
-        syncLock = [[NSLock alloc]init];
-         [self setAudioQueue];
+        [self setAudio];
     }
     return self;
 }
 
--(void)setAudioQueue {
-    /* AudioQueueNewOutput创建输出音频的AudioQueue
-     * 1.即将播放音频的数据格式
-     * 2.使用完一个缓冲区的回调
-     * 3.用户传入的数据指针，用于传递给回调函数
-     * 4.指明回调时间发生在哪个RunLoop中，为NULL，表明为AudioQueue线程中执行回调，一般传NULL
-     * 5.指明回调时间发生的RunLoop模式，为NULL，表明为kCFRunLoopCommonModes
-     * 6.
-     * 7.AudioQueue的引用实例
-     */
-    
-    BOOL ret = [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
-    if (!ret) {
-        NSLog(@"设置声音环境失败");
+-(AudioStreamBasicDescription *)setFormat {
+    AudioStreamBasicDescription *format = &playState.format;
+    format->mFormatID = kAudioFormatLinearPCM;
+    format->mSampleRate = 44100.0;
+    format->mFramesPerPacket = 1;
+    format->mChannelsPerFrame = 1;
+    format->mBitsPerChannel = 16;
+    format->mBytesPerFrame = format->mBitsPerChannel * format->mChannelsPerFrame / 8;
+    format->mBytesPerPacket = format->mFramesPerPacket * format->mBytesPerFrame;
+    format->mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
+    return format;
+}
+
+-(void)setAudio {
+    playState.currentPacket = 0;
+    playState.bufferSize = 2048;
+    NSString *docPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+    NSString *filePath = [docPath stringByAppendingPathComponent:@"recording.caf"];
+    fileURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, (CFStringRef)filePath, kCFURLPOSIXPathStyle, false);
+    if (!fileURL) {
+        NSLog(@"can't parse fiel path");
         return;
     }
     
-    ret = [[AVAudioSession sharedInstance] setActive:YES error:nil];
-    if (!ret) {
-        NSLog(@"启动失败");
+    AudioFileOpenURL(fileURL, kAudioFileReadPermission, kAudioFileAIFFType, &playState.fileId);
+    
+    AudioQueueNewOutput([self setFormat], HandleOutputBuffer , &playState, NULL, NULL, 0, &playState.queue);
+    
+    for (int i = 0; i < kNumberBuffers; ++i) {
+        AudioQueueAllocateBuffer(playState.queue, playState.bufferSize, &playState.buffers[i]);
+        HandleOutputBuffer(&playState, playState.queue, playState.buffers[i]);
+    }
+}
+
+static void HandleOutputBuffer(void *inUserData, AudioQueueRef outAQ, AudioQueueBufferRef outBuffer) {
+    PlayState *playerState = (PlayState *)inUserData;
+    if (!playerState->playing) {
+        NSLog(@"not start playing");
         return;
     }
     
-    audioBufferSize = 2048;
-    
-    audioFormat.mFormatID = kAudioFormatLinearPCM;
-    audioFormat.mSampleRate = 44100.0;
-    audioFormat.mFramesPerPacket = 1;
-    audioFormat.mChannelsPerFrame = 1;
-    audioFormat.mBitsPerChannel = 16;
-    audioFormat.mBytesPerFrame = audioFormat.mBitsPerChannel * audioFormat.mChannelsPerFrame / 8;
-    audioFormat.mBytesPerPacket = audioFormat.mFramesPerPacket * audioFormat.mBytesPerFrame;
-    audioFormat.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
-    
-    AudioQueueNewOutput(&audioFormat, HandleOutputBuffer , (__bridge void*)self, NULL, NULL, 0, &audioPlayerQueue);
-    
-    for (int i = 0; i < kNumberBuffers; ++i) {
-        AudioQueueAllocateBuffer(audioPlayerQueue, audioBufferSize, &audioPlayerBuffers[i]);
-    }
-    
-    AudioQueueStart(audioPlayerQueue, NULL);
-}
-
-static void HandleOutputBuffer(void *inUserData, AudioQueueRef inAQ, AudioQueueBufferRef inBuffer) {
-    AQPlayer *player = (__bridge AQPlayer*)inUserData;
-    [player resetBufferState:inAQ withBuffer:inBuffer];
-}
-
--(void)resetBufferState:(AudioQueueRef)inAQ withBuffer:(AudioQueueBufferRef)inBuffer {
-    if (pcmData.length == 0) {
-        NSLog(@"this is empty data");
-        inBuffer->mAudioDataByteSize = 1;
-        memcpy(inBuffer->mAudioData, "0", 1);
-        AudioQueueEnqueueBuffer(inAQ, inBuffer, 0, NULL);
-    }
-    
-    for (int i = 0; i < kNumberBuffers; ++i) {
-        if (inBuffer == audioPlayerBuffers[i]) {
-            NSLog(@"index is:%d",i);
-            audioBufferUsed[i] = false;
-        }
+    AudioStreamPacketDescription *packetDescs = NULL;
+    UInt32 bytesRead;
+    UInt32 numPackets = 1024;
+    AudioFileReadPacketData(playerState->fileId, false, &bytesRead, packetDescs, playerState->currentPacket, &numPackets, outBuffer->mAudioData);
+    if (numPackets) {
+        outBuffer->mAudioDataByteSize = bytesRead;
+        AudioQueueEnqueueBuffer(playerState->queue, outBuffer, 0, packetDescs);
+        playerState->currentPacket += numPackets;
     }
 }
 
-
--(void)startPlayWithData:(NSData *)data {
-   
-    [syncLock lock];
-    pcmData = data;
-    for (int i = 0; i < kNumberBuffers; i ++) {
-        if (audioBufferUsed[i]) {
-            continue;
-        }
-        audioPlayerBuffers[i]->mAudioDataByteSize = (UInt32)data.length;
-        memcpy(audioPlayerBuffers[i]->mAudioData, data.bytes, data.length);
-        AudioQueueEnqueueBuffer(audioPlayerQueue, audioPlayerBuffers[i], 0, nil);
-    }
-    [syncLock unlock];
+-(void)startPlay{
+    AudioQueueStart(playState.queue, NULL);
+    playState.playing = true;
 }
 
--(void)stopPlayer {
-    if (audioPlayerQueue != nil) {
-        AudioQueueStop(audioPlayerQueue, true);
-    }
-    audioPlayerQueue = nil;
-    syncLock = nil;
+-(void)stopPlay {
+    AudioQueueStop(playState.queue, true);
+    AudioQueueDispose(playState.queue, true);
+    playState.playing = false;
 }
 
 
