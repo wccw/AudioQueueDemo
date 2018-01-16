@@ -16,9 +16,10 @@
 		C61F05DB2008493E00EC3B26 /* AudioQueueDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C61F05DA2008493E00EC3B26 /* AudioQueueDemoTests.m */; };
 		C61F05E62008493E00EC3B26 /* AudioQueueDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = C61F05E52008493E00EC3B26 /* AudioQueueDemoUITests.m */; };
 		C61F05F62008498F00EC3B26 /* AQPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C61F05F52008498F00EC3B26 /* AQPlayer.m */; };
-		C61F05F92008499D00EC3B26 /* AQRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = C61F05F82008499D00EC3B26 /* AQRecorder.m */; };
+		C61F05F92008499D00EC3B26 /* AQRecorderAndPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C61F05F82008499D00EC3B26 /* AQRecorderAndPlayer.m */; };
 		C622BC3E200CAA7400BEC2E4 /* 浪花一朵朵片段8k16bit单声道.pcm in Resources */ = {isa = PBXBuildFile; fileRef = C622BC3D200CAA7300BEC2E4 /* 浪花一朵朵片段8k16bit单声道.pcm */; };
 		C622BC40200CAA7E00BEC2E4 /* test.pcm in Resources */ = {isa = PBXBuildFile; fileRef = C622BC3F200CAA7E00BEC2E4 /* test.pcm */; };
+		C622BC44200DA78F00BEC2E4 /* AQRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = C622BC43200DA78F00BEC2E4 /* AQRecorder.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,11 +58,13 @@
 		C61F05E72008493F00EC3B26 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C61F05F42008498F00EC3B26 /* AQPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AQPlayer.h; sourceTree = "<group>"; };
 		C61F05F52008498F00EC3B26 /* AQPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AQPlayer.m; sourceTree = "<group>"; };
-		C61F05F72008499D00EC3B26 /* AQRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AQRecorder.h; sourceTree = "<group>"; };
-		C61F05F82008499D00EC3B26 /* AQRecorder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AQRecorder.m; sourceTree = "<group>"; };
+		C61F05F72008499D00EC3B26 /* AQRecorderAndPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AQRecorderAndPlayer.h; sourceTree = "<group>"; };
+		C61F05F82008499D00EC3B26 /* AQRecorderAndPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AQRecorderAndPlayer.m; sourceTree = "<group>"; };
 		C61F05FB20084B2B00EC3B26 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		C622BC3D200CAA7300BEC2E4 /* 浪花一朵朵片段8k16bit单声道.pcm */ = {isa = PBXFileReference; lastKnownFileType = file; path = "浪花一朵朵片段8k16bit单声道.pcm"; sourceTree = "<group>"; };
 		C622BC3F200CAA7E00BEC2E4 /* test.pcm */ = {isa = PBXFileReference; lastKnownFileType = file; path = test.pcm; sourceTree = "<group>"; };
+		C622BC42200DA78F00BEC2E4 /* AQRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AQRecorder.h; sourceTree = "<group>"; };
+		C622BC43200DA78F00BEC2E4 /* AQRecorder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AQRecorder.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,10 +153,12 @@
 			children = (
 				C622BC3F200CAA7E00BEC2E4 /* test.pcm */,
 				C622BC3D200CAA7300BEC2E4 /* 浪花一朵朵片段8k16bit单声道.pcm */,
+				C622BC42200DA78F00BEC2E4 /* AQRecorder.h */,
+				C622BC43200DA78F00BEC2E4 /* AQRecorder.m */,
 				C61F05F42008498F00EC3B26 /* AQPlayer.h */,
 				C61F05F52008498F00EC3B26 /* AQPlayer.m */,
-				C61F05F72008499D00EC3B26 /* AQRecorder.h */,
-				C61F05F82008499D00EC3B26 /* AQRecorder.m */,
+				C61F05F72008499D00EC3B26 /* AQRecorderAndPlayer.h */,
+				C61F05F82008499D00EC3B26 /* AQRecorderAndPlayer.m */,
 			);
 			path = "Record&Play";
 			sourceTree = "<group>";
@@ -305,7 +310,8 @@
 				C61F05C62008493D00EC3B26 /* ViewController.m in Sources */,
 				C61F05D12008493E00EC3B26 /* main.m in Sources */,
 				C61F05C32008493D00EC3B26 /* AppDelegate.m in Sources */,
-				C61F05F92008499D00EC3B26 /* AQRecorder.m in Sources */,
+				C61F05F92008499D00EC3B26 /* AQRecorderAndPlayer.m in Sources */,
+				C622BC44200DA78F00BEC2E4 /* AQRecorder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -470,7 +476,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = Y4H4LE743X;
+				DEVELOPMENT_TEAM = 7XWL49SQ5Y;
 				INFOPLIST_FILE = AudioQueueDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.lianluo.AudioQueueDemo;
@@ -486,7 +492,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = Y4H4LE743X;
+				DEVELOPMENT_TEAM = 7XWL49SQ5Y;
 				INFOPLIST_FILE = AudioQueueDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.lianluo.AudioQueueDemo;

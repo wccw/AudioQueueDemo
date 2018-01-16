@@ -7,11 +7,12 @@
 //
 
 #import "ViewController.h"
-#import "AQRecorder.h"
+#import "AQRecorderAndPlayer.h"
 #import "AQPlayer.h"
-@interface ViewController () <recorderDelegate>
+@interface ViewController ()
 {
-    AQRecorder *recorder;
+    AQRecorderAndPlayer *aqRecorderPlayer;
+    AQPlayer            *aqPlayer;
 }
 @end
 
@@ -20,15 +21,32 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    recorder = [[AQRecorder alloc]initWithDelegate:self];
-    [recorder beganRecorder];
-    [recorder beganPlayer];
+    aqRecorderPlayer = [[AQRecorderAndPlayer alloc]init];
+    aqPlayer = [[AQPlayer alloc]init];
+}
+- (IBAction)recorderplayerStart:(id)sender {
+    [aqRecorderPlayer beganRecorderPlayer];
 }
 
--(void)recordData:(NSData *)data {
-    [recorder playerData:data];
+- (IBAction)recorderplayerStop:(id)sender {
+    [aqRecorderPlayer stopRecorderPlayer];
 }
 
+- (IBAction)recorderStart:(id)sender {
+    
+}
+
+- (IBAction)recorderStop:(id)sender {
+    
+}
+
+- (IBAction)playerStart:(id)sender {
+    [aqPlayer startPlayerWithData:nil];
+}
+
+- (IBAction)playerStop:(id)sender {
+    [aqPlayer stopPlayer];
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
