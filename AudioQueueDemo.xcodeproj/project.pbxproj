@@ -22,6 +22,7 @@
 		C622BC44200DA78F00BEC2E4 /* AQRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = C622BC43200DA78F00BEC2E4 /* AQRecorder.m */; };
 		C622BC47200F251300BEC2E4 /* YGAudioFile.m in Sources */ = {isa = PBXBuildFile; fileRef = C622BC46200F251300BEC2E4 /* YGAudioFile.m */; };
 		C622BC49200F3E0F00BEC2E4 /* MP3Sample.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C622BC48200F3E0F00BEC2E4 /* MP3Sample.mp3 */; };
+		C622BC4C200F4F2800BEC2E4 /* AQLocalFilePlay.m in Sources */ = {isa = PBXBuildFile; fileRef = C622BC4B200F4F2800BEC2E4 /* AQLocalFilePlay.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +71,8 @@
 		C622BC45200F251300BEC2E4 /* YGAudioFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YGAudioFile.h; sourceTree = "<group>"; };
 		C622BC46200F251300BEC2E4 /* YGAudioFile.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YGAudioFile.m; sourceTree = "<group>"; };
 		C622BC48200F3E0F00BEC2E4 /* MP3Sample.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = MP3Sample.mp3; sourceTree = "<group>"; };
+		C622BC4A200F4F2800BEC2E4 /* AQLocalFilePlay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AQLocalFilePlay.h; sourceTree = "<group>"; };
+		C622BC4B200F4F2800BEC2E4 /* AQLocalFilePlay.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AQLocalFilePlay.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,6 +170,8 @@
 				C61F05F82008499D00EC3B26 /* AQRecorderAndPlayer.m */,
 				C622BC45200F251300BEC2E4 /* YGAudioFile.h */,
 				C622BC46200F251300BEC2E4 /* YGAudioFile.m */,
+				C622BC4A200F4F2800BEC2E4 /* AQLocalFilePlay.h */,
+				C622BC4B200F4F2800BEC2E4 /* AQLocalFilePlay.m */,
 			);
 			path = "Record&Play";
 			sourceTree = "<group>";
@@ -322,6 +327,7 @@
 				C61F05F92008499D00EC3B26 /* AQRecorderAndPlayer.m in Sources */,
 				C622BC44200DA78F00BEC2E4 /* AQRecorder.m in Sources */,
 				C622BC47200F251300BEC2E4 /* YGAudioFile.m in Sources */,
+				C622BC4C200F4F2800BEC2E4 /* AQLocalFilePlay.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
