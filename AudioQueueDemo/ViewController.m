@@ -11,11 +11,13 @@
 #import <AVFoundation/AVFoundation.h>
 #import "AQPlayer.h"
 #import "AQRecorder.h"
+#import "YGAudioFile.h"
 @interface ViewController ()
 {
-    AQRecorderAndPlayer *aqRecorderPlayer;
-    AQRecorder          *aqRecorder;
-    AQPlayer            *aqPlayer;
+    //AQRecorderAndPlayer *aqRecorderPlayer;
+    //AQRecorder          *aqRecorder;
+    //AQPlayer            *aqPlayer;
+    YGAudioFile         *audioFile;
 }
 @end
 
@@ -24,36 +26,39 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     //Do any additional setup after loading the view, typically from a nib.
-    BOOL success = [[AVAudioSession sharedInstance]setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
-    if (!success) {
-        NSLog(@"Audio Session Failed");
-        return;
-    }
-    aqRecorder = [[AQRecorder alloc]init];
+//    BOOL success = [[AVAudioSession sharedInstance]setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+//    if (!success) {
+//        NSLog(@"Audio Session Failed");
+//        return;
+//    }
+//    aqRecorder = [[AQRecorder alloc]init];
+//    aqPlayer = [[AQPlayer alloc]init];
+    NSString *path = [[NSBundle mainBundle]pathForResource:@"MP3Sample" ofType:@"mp3"];
+    audioFile = [[YGAudioFile alloc]initWithFilePath:path withFileID:kAudioFormatMPEGLayer3];
    
 }
 - (IBAction)recorderplayerStart:(id)sender {
-    [aqRecorderPlayer beganRecorderPlayer];
+    //[aqRecorderPlayer beganRecorderPlayer];
 }
 
 - (IBAction)recorderplayerStop:(id)sender {
-    [aqRecorderPlayer stopRecorderPlayer];
+    //[aqRecorderPlayer stopRecorderPlayer];
 }
 
 - (IBAction)recorderStart:(id)sender {
-    [aqRecorder startRecorder];
+    //[aqRecorder startRecorder];
 }
 
 - (IBAction)recorderStop:(id)sender {
-    [aqRecorder stopRecorder];
+    //[aqRecorder stopRecorder];
 }
 
 - (IBAction)playerStart:(id)sender {
-    
+    //[aqPlayer startPlay];
 }
 
 - (IBAction)playerStop:(id)sender {
-    
+    //[aqPlayer stopPlay];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -20,6 +20,8 @@
 		C622BC3E200CAA7400BEC2E4 /* 浪花一朵朵片段8k16bit单声道.pcm in Resources */ = {isa = PBXBuildFile; fileRef = C622BC3D200CAA7300BEC2E4 /* 浪花一朵朵片段8k16bit单声道.pcm */; };
 		C622BC40200CAA7E00BEC2E4 /* test.pcm in Resources */ = {isa = PBXBuildFile; fileRef = C622BC3F200CAA7E00BEC2E4 /* test.pcm */; };
 		C622BC44200DA78F00BEC2E4 /* AQRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = C622BC43200DA78F00BEC2E4 /* AQRecorder.m */; };
+		C622BC47200F251300BEC2E4 /* YGAudioFile.m in Sources */ = {isa = PBXBuildFile; fileRef = C622BC46200F251300BEC2E4 /* YGAudioFile.m */; };
+		C622BC49200F3E0F00BEC2E4 /* MP3Sample.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C622BC48200F3E0F00BEC2E4 /* MP3Sample.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,6 +67,9 @@
 		C622BC3F200CAA7E00BEC2E4 /* test.pcm */ = {isa = PBXFileReference; lastKnownFileType = file; path = test.pcm; sourceTree = "<group>"; };
 		C622BC42200DA78F00BEC2E4 /* AQRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AQRecorder.h; sourceTree = "<group>"; };
 		C622BC43200DA78F00BEC2E4 /* AQRecorder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AQRecorder.m; sourceTree = "<group>"; };
+		C622BC45200F251300BEC2E4 /* YGAudioFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YGAudioFile.h; sourceTree = "<group>"; };
+		C622BC46200F251300BEC2E4 /* YGAudioFile.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YGAudioFile.m; sourceTree = "<group>"; };
+		C622BC48200F3E0F00BEC2E4 /* MP3Sample.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = MP3Sample.mp3; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,6 +156,7 @@
 		C61F05F32008495F00EC3B26 /* Record&Play */ = {
 			isa = PBXGroup;
 			children = (
+				C622BC48200F3E0F00BEC2E4 /* MP3Sample.mp3 */,
 				C622BC3F200CAA7E00BEC2E4 /* test.pcm */,
 				C622BC3D200CAA7300BEC2E4 /* 浪花一朵朵片段8k16bit单声道.pcm */,
 				C622BC42200DA78F00BEC2E4 /* AQRecorder.h */,
@@ -159,6 +165,8 @@
 				C61F05F52008498F00EC3B26 /* AQPlayer.m */,
 				C61F05F72008499D00EC3B26 /* AQRecorderAndPlayer.h */,
 				C61F05F82008499D00EC3B26 /* AQRecorderAndPlayer.m */,
+				C622BC45200F251300BEC2E4 /* YGAudioFile.h */,
+				C622BC46200F251300BEC2E4 /* YGAudioFile.m */,
 			);
 			path = "Record&Play";
 			sourceTree = "<group>";
@@ -282,6 +290,7 @@
 				C61F05CB2008493E00EC3B26 /* Assets.xcassets in Resources */,
 				C61F05C92008493D00EC3B26 /* Main.storyboard in Resources */,
 				C622BC40200CAA7E00BEC2E4 /* test.pcm in Resources */,
+				C622BC49200F3E0F00BEC2E4 /* MP3Sample.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -312,6 +321,7 @@
 				C61F05C32008493D00EC3B26 /* AppDelegate.m in Sources */,
 				C61F05F92008499D00EC3B26 /* AQRecorderAndPlayer.m in Sources */,
 				C622BC44200DA78F00BEC2E4 /* AQRecorder.m in Sources */,
+				C622BC47200F251300BEC2E4 /* YGAudioFile.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

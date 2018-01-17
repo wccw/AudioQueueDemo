@@ -19,6 +19,7 @@ typedef struct {
     SInt64                      currentPacket;
     UInt32                      bufferSize;
     BOOL                        playing;
+    
 } PlayState;
 
 @interface AQPlayer() {
@@ -55,12 +56,13 @@ typedef struct {
     NSString *docPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
     NSString *filePath = [docPath stringByAppendingPathComponent:@"recording.caf"];
     fileURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, (CFStringRef)filePath, kCFURLPOSIXPathStyle, false);
+    //AudioFileCreateWithURL
     if (!fileURL) {
         NSLog(@"can't parse fiel path");
         return;
     }
     
-    AudioFileOpenURL(fileURL, kAudioFileReadPermission, kAudioFileAIFFType, &playState.fileId);
+    AudioFileOpenURL(fileURL, kAudioFileReadPermission, kAudioFileCAFType, &playState.fileId);
     
     AudioQueueNewOutput([self setFormat], HandleOutputBuffer , &playState, NULL, NULL, 0, &playState.queue);
     
@@ -73,10 +75,11 @@ typedef struct {
 static void HandleOutputBuffer(void *inUserData, AudioQueueRef outAQ, AudioQueueBufferRef outBuffer) {
     PlayState *playerState = (PlayState *)inUserData;
     if (!playerState->playing) {
-        NSLog(@"not start playing");
+        NSLog(@"this is stop");
         return;
     }
     
+    NSLog(@"this is player");
     AudioStreamPacketDescription *packetDescs = NULL;
     UInt32 bytesRead;
     UInt32 numPackets = 1024;
@@ -89,8 +92,10 @@ static void HandleOutputBuffer(void *inUserData, AudioQueueRef outAQ, AudioQueue
 }
 
 -(void)startPlay{
+    NSLog(@"start play");
     AudioQueueStart(playState.queue, NULL);
     playState.playing = true;
+    HandleOutputBuffer(&playState, playState.queue, playState.buffers[0]);
 }
 
 -(void)stopPlay {
