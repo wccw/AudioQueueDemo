@@ -24,12 +24,11 @@
 
 @implementation PCMDataPlayer
 
--(instancetype)init {
+-(instancetype)initWithPcmFilePath:(NSString *)path {
     if (self = [super init]) {
-        NSString *filePath = [[NSBundle mainBundle]pathForResource:@"浪花一朵朵片段8k16bit单声道" ofType:@"pcm"];
-        pcmFile = fopen([filePath UTF8String], "r");
+        pcmFile = fopen([path UTF8String], "r");
         if (pcmFile) {
-            pcmDataBuffer = malloc(1000);
+            pcmDataBuffer = malloc(EVERY_READ_SIZE);
         } else {
             NSLog(@"open pcm file fail");
         }
@@ -78,7 +77,6 @@ static void AQAudioQueueOutputCallback(void *inUserData, AudioQueueRef inAQ, Aud
         fclose(pcmFile);
         return;
     }
-    NSLog(@"readLeng:%d",readLength);
     inbuffer->mAudioDataByteSize = (UInt32)readLength;
     memcpy(inbuffer->mAudioData, pcmDataBuffer, readLength);
     AudioQueueEnqueueBuffer(audioQueue, inbuffer, 0, NULL);

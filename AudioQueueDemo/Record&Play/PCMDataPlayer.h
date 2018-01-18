@@ -10,6 +10,7 @@
 
 @interface PCMDataPlayer : NSObject
 
+-(instancetype)initWithPcmFilePath:(NSString *)path;
 -(void)startPlay;
 -(void)stopPlay;
 

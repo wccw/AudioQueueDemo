@@ -17,8 +17,7 @@
 		C61F05E62008493E00EC3B26 /* AudioQueueDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = C61F05E52008493E00EC3B26 /* AudioQueueDemoUITests.m */; };
 		C61F05F62008498F00EC3B26 /* AQPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C61F05F52008498F00EC3B26 /* AQPlayer.m */; };
 		C61F05F92008499D00EC3B26 /* AQRecorderAndPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C61F05F82008499D00EC3B26 /* AQRecorderAndPlayer.m */; };
-		C622BC3E200CAA7400BEC2E4 /* 浪花一朵朵片段8k16bit单声道.pcm in Resources */ = {isa = PBXBuildFile; fileRef = C622BC3D200CAA7300BEC2E4 /* 浪花一朵朵片段8k16bit单声道.pcm */; };
-		C622BC40200CAA7E00BEC2E4 /* test.pcm in Resources */ = {isa = PBXBuildFile; fileRef = C622BC3F200CAA7E00BEC2E4 /* test.pcm */; };
+		C622BC40200CAA7E00BEC2E4 /* PCMSample.pcm in Resources */ = {isa = PBXBuildFile; fileRef = C622BC3F200CAA7E00BEC2E4 /* PCMSample.pcm */; };
 		C622BC44200DA78F00BEC2E4 /* AQRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = C622BC43200DA78F00BEC2E4 /* AQRecorder.m */; };
 		C622BC47200F251300BEC2E4 /* YGAudioFile.m in Sources */ = {isa = PBXBuildFile; fileRef = C622BC46200F251300BEC2E4 /* YGAudioFile.m */; };
 		C622BC49200F3E0F00BEC2E4 /* MP3Sample.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C622BC48200F3E0F00BEC2E4 /* MP3Sample.mp3 */; };
@@ -29,6 +28,7 @@
 		C622BC5620106CCB00BEC2E4 /* WAVSample.wav in Resources */ = {isa = PBXBuildFile; fileRef = C622BC5520106CCA00BEC2E4 /* WAVSample.wav */; };
 		C622BC5A2010749200BEC2E4 /* FACSample.flac in Resources */ = {isa = PBXBuildFile; fileRef = C622BC592010749200BEC2E4 /* FACSample.flac */; };
 		C622BC5D201082E600BEC2E4 /* PCMDataPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C622BC5C201082E600BEC2E4 /* PCMDataPlayer.m */; };
+		C622BC63201096D700BEC2E4 /* AudioFilePlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C622BC62201096D700BEC2E4 /* AudioFilePlayer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,8 +70,7 @@
 		C61F05F72008499D00EC3B26 /* AQRecorderAndPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AQRecorderAndPlayer.h; sourceTree = "<group>"; };
 		C61F05F82008499D00EC3B26 /* AQRecorderAndPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AQRecorderAndPlayer.m; sourceTree = "<group>"; };
 		C61F05FB20084B2B00EC3B26 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		C622BC3D200CAA7300BEC2E4 /* 浪花一朵朵片段8k16bit单声道.pcm */ = {isa = PBXFileReference; lastKnownFileType = file; path = "浪花一朵朵片段8k16bit单声道.pcm"; sourceTree = "<group>"; };
-		C622BC3F200CAA7E00BEC2E4 /* test.pcm */ = {isa = PBXFileReference; lastKnownFileType = file; path = test.pcm; sourceTree = "<group>"; };
+		C622BC3F200CAA7E00BEC2E4 /* PCMSample.pcm */ = {isa = PBXFileReference; lastKnownFileType = file; path = PCMSample.pcm; sourceTree = "<group>"; };
 		C622BC42200DA78F00BEC2E4 /* AQRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AQRecorder.h; sourceTree = "<group>"; };
 		C622BC43200DA78F00BEC2E4 /* AQRecorder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AQRecorder.m; sourceTree = "<group>"; };
 		C622BC45200F251300BEC2E4 /* YGAudioFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YGAudioFile.h; sourceTree = "<group>"; };
@@ -86,6 +85,8 @@
 		C622BC592010749200BEC2E4 /* FACSample.flac */ = {isa = PBXFileReference; lastKnownFileType = file; path = FACSample.flac; sourceTree = "<group>"; };
 		C622BC5B201082E600BEC2E4 /* PCMDataPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PCMDataPlayer.h; sourceTree = "<group>"; };
 		C622BC5C201082E600BEC2E4 /* PCMDataPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PCMDataPlayer.m; sourceTree = "<group>"; };
+		C622BC61201096D700BEC2E4 /* AudioFilePlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioFilePlayer.h; sourceTree = "<group>"; };
+		C622BC62201096D700BEC2E4 /* AudioFilePlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioFilePlayer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -178,8 +179,7 @@
 				C622BC51201051E800BEC2E4 /* AACSample.aac */,
 				C622BC4D2010487A00BEC2E4 /* M4ASample.m4a */,
 				C622BC48200F3E0F00BEC2E4 /* MP3Sample.mp3 */,
-				C622BC3F200CAA7E00BEC2E4 /* test.pcm */,
-				C622BC3D200CAA7300BEC2E4 /* 浪花一朵朵片段8k16bit单声道.pcm */,
+				C622BC3F200CAA7E00BEC2E4 /* PCMSample.pcm */,
 				C622BC42200DA78F00BEC2E4 /* AQRecorder.h */,
 				C622BC43200DA78F00BEC2E4 /* AQRecorder.m */,
 				C61F05F42008498F00EC3B26 /* AQPlayer.h */,
@@ -192,6 +192,8 @@
 				C622BC4B200F4F2800BEC2E4 /* AQLocalFilePlay.m */,
 				C622BC5B201082E600BEC2E4 /* PCMDataPlayer.h */,
 				C622BC5C201082E600BEC2E4 /* PCMDataPlayer.m */,
+				C622BC61201096D700BEC2E4 /* AudioFilePlayer.h */,
+				C622BC62201096D700BEC2E4 /* AudioFilePlayer.m */,
 			);
 			path = "Record&Play";
 			sourceTree = "<group>";
@@ -315,11 +317,10 @@
 				C622BC4E2010487B00BEC2E4 /* M4ASample.m4a in Resources */,
 				C622BC502010488100BEC2E4 /* CAFSample.caf in Resources */,
 				C61F05CE2008493E00EC3B26 /* LaunchScreen.storyboard in Resources */,
-				C622BC3E200CAA7400BEC2E4 /* 浪花一朵朵片段8k16bit单声道.pcm in Resources */,
 				C61F05CB2008493E00EC3B26 /* Assets.xcassets in Resources */,
 				C61F05C92008493D00EC3B26 /* Main.storyboard in Resources */,
 				C622BC5A2010749200BEC2E4 /* FACSample.flac in Resources */,
-				C622BC40200CAA7E00BEC2E4 /* test.pcm in Resources */,
+				C622BC40200CAA7E00BEC2E4 /* PCMSample.pcm in Resources */,
 				C622BC49200F3E0F00BEC2E4 /* MP3Sample.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -354,6 +355,7 @@
 				C622BC47200F251300BEC2E4 /* YGAudioFile.m in Sources */,
 				C622BC5D201082E600BEC2E4 /* PCMDataPlayer.m in Sources */,
 				C622BC4C200F4F2800BEC2E4 /* AQLocalFilePlay.m in Sources */,
+				C622BC63201096D700BEC2E4 /* AudioFilePlayer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

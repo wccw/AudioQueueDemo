@@ -23,7 +23,6 @@
 
 -(void)fileAttributes:(NSString *)filePath withFileID:(AudioFileTypeID)fileType {
     _fileType = fileType;
-    
     if(![self openAudioFile])
         return;
     
