@@ -6,14 +6,14 @@
 //  Copyright © 2018年 lianluo.com. All rights reserved.
 //
 
-#import "PCMDataPlayer.h"
+#import "PCMFilePlayer.h"
 #import <AudioToolbox/AudioToolbox.h>
 
 #define EVERY_READ_SIZE 1000
 #define BUFFER_SIZE 2000
 #define BUFFER_NUM 3
 
-@interface PCMDataPlayer() {
+@interface PCMFilePlayer() {
     AudioQueueRef       audioQueue;
     AudioQueueBufferRef audioBuffers[BUFFER_NUM];
     AudioStreamBasicDescription audioForamt;
@@ -22,7 +22,7 @@
 }
 @end
 
-@implementation PCMDataPlayer
+@implementation PCMFilePlayer
 
 -(instancetype)initWithPcmFilePath:(NSString *)path {
     if (self = [super init]) {
@@ -66,7 +66,7 @@
 }
 
 static void AQAudioQueueOutputCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBufferRef inBuffer) {
-    PCMDataPlayer *pcmPlayer = (__bridge PCMDataPlayer *)inUserData;
+    PCMFilePlayer *pcmPlayer = (__bridge PCMFilePlayer *)inUserData;
     [pcmPlayer processOutputCallback:inAQ withBuffer:inBuffer];
 }
 

@@ -12,13 +12,11 @@
 #import "AQPlayer.h"
 #import "AQRecorder.h"
 #import "YGAudioFile.h"
-#import "AQLocalFilePlay.h"
-#import "PCMDataPlayer.h"
+#import "PCMFilePlayer.h"
 #import "AudioFilePlayer.h"
 @interface ViewController ()
 {
-    //AQLocalFilePlay *filePlay;
-    PCMDataPlayer *pcmPlay;
+    PCMFilePlayer *pcmPlay;
     AudioFilePlayer *filePlay;
 }
 @end
@@ -31,7 +29,7 @@
     filePlay = [[AudioFilePlayer alloc]initWithPath:aacPath];
     
     NSString *pcmPath = [[NSBundle mainBundle]pathForResource:@"PCMSample" ofType:@"pcm"];
-    pcmPlay = [[PCMDataPlayer alloc]initWithPcmFilePath:pcmPath];
+    pcmPlay = [[PCMFilePlayer alloc]initWithPcmFilePath:pcmPath];
 }
 - (IBAction)recorderplayerStart:(id)sender {
     [pcmPlay startPlay];
