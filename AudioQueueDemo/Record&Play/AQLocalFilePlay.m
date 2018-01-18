@@ -22,6 +22,7 @@
     SInt64 currentPacket;
     BOOL isFormatVBR;
 }
+
 @end
 
 @implementation AQLocalFilePlay
@@ -40,14 +41,19 @@
     AudioQueueStart(audioQueue, NULL);
 }
 
+-(void)stopPlay {
+    AudioQueueStop(audioQueue, true);
+}
+
 -(void)openAudioFile {
-    NSString *filePath = [[NSBundle mainBundle]pathForResource:@"MP3Sample" ofType:@"mp3"];
+    NSString *filePath = [[NSBundle mainBundle]pathForResource:@"AACSample" ofType:@"aac"];
     CFURLRef fileUrl = CFURLCreateWithString(kCFAllocatorDefault, (CFStringRef)filePath, NULL);
     if (!fileUrl) {
         return;
     }
     OSStatus status = AudioFileOpenURL(fileUrl, kAudioFileReadPermission, 0, &audioFieldID);
     if (status != noErr) {
+        NSLog(@"open audio file fail");
         return;
     }
     [self getAudioFileProperty];
@@ -57,24 +63,27 @@
 -(void)getAudioFileProperty {
     currentPacket = 0;
     
-    //format
+    //get audio format
     UInt32 size = sizeof(format);
     OSStatus status = AudioFileGetProperty(audioFieldID, kAudioFilePropertyDataFormat, &size, &format);
     if (status != noErr) {
         return;
     }
     
-    //maxPacketSize
+    //get maxPacketSize
     size = sizeof(maxPacketSize);
     status = AudioFileGetProperty(audioFieldID, kAudioFilePropertyPacketSizeUpperBound, &size, &maxPacketSize);
     if (status != noErr) {
         return;
     }
     
-    //numPacketToRead bufferSize
+    //isVBR
+    isFormatVBR = (format.mBytesPerPacket == 0 || format.mFramesPerPacket == 0);
+
+    //calculate numPacketToRead bufferSize
     [self calculateBytesForTime:KBufferDurationSeconds withPacket:maxPacketSize];
     
-    //
+    //If the file has a cookie , we shoule get it and set it on the audioqueue
     size = sizeof(UInt32);
     status = AudioFileGetPropertyInfo(audioFieldID, kAudioFilePropertyMagicCookieData, &size, NULL);
     if (!status && size) {
@@ -84,23 +93,13 @@
         free(cookie);
     }
     
-    //
+    //channel layout
     status = AudioFileGetPropertyInfo(audioFieldID, kAudioFilePropertyChannelLayout, &size, NULL);
-    if (status == noErr && size > 0) {
+    if (!status && size) {
         AudioChannelLayout *acl = (AudioChannelLayout *)malloc(size);
-        status = AudioFileGetProperty(audioFieldID, kAudioFilePropertyChannelLayout, &size, acl);
-        if (status) {
-            free(acl);
-            return;
-        }
-        status = AudioQueueSetProperty(audioQueue, kAudioQueueProperty_ChannelLayout, acl, size);
-        if (status) {
-            free(acl);
-            return;
-        }
+        AudioFileGetProperty(audioFieldID, kAudioFilePropertyChannelLayout, &size, acl);
+        AudioQueueSetProperty(audioQueue, kAudioQueueProperty_ChannelLayout, acl, size);
     }
-    
-    isFormatVBR = (format.mBytesPerPacket == 0 || format.mFramesPerPacket == 0);
 }
 
 -(void)calculateBytesForTime:(Float64)inSeconds withPacket:(UInt32)maxPacketSize {

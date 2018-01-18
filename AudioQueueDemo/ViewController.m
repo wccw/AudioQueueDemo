@@ -13,12 +13,12 @@
 #import "AQRecorder.h"
 #import "YGAudioFile.h"
 #import "AQLocalFilePlay.h"
+#import "PCMDataPlayer.h"
 @interface ViewController ()
 {
-    //AQRecorderAndPlayer *aqRecorderPlayer;
-    //AQRecorder          *aqRecorder;
-    //AQPlayer            *aqPlayer;
+    AQRecorder          *aqRecorder;
     AQLocalFilePlay *filePlay;
+    PCMDataPlayer *pcmPlay;
 }
 @end
 
@@ -26,40 +26,33 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    //Do any additional setup after loading the view, typically from a nib.
-//    BOOL success = [[AVAudioSession sharedInstance]setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
-//    if (!success) {
-//        NSLog(@"Audio Session Failed");
-//        return;
-//    }
-//    aqRecorder = [[AQRecorder alloc]init];
-//    aqPlayer = [[AQPlayer alloc]init];
+    
     filePlay = [[AQLocalFilePlay alloc]init];
- 
+    pcmPlay = [[PCMDataPlayer alloc]init];
+
 }
 - (IBAction)recorderplayerStart:(id)sender {
-    [filePlay startPlay];
-    //[aqRecorderPlayer beganRecorderPlayer];
+    [pcmPlay startPlay];
 }
 
 - (IBAction)recorderplayerStop:(id)sender {
-    //[aqRecorderPlayer stopRecorderPlayer];
+    [pcmPlay stopPlay];
 }
 
 - (IBAction)recorderStart:(id)sender {
-    //[aqRecorder startRecorder];
+    
 }
 
 - (IBAction)recorderStop:(id)sender {
-    //[aqRecorder stopRecorder];
 }
 
 - (IBAction)playerStart:(id)sender {
+    [filePlay startPlay];
     //[aqPlayer startPlay];
 }
 
 - (IBAction)playerStop:(id)sender {
-    //[aqPlayer stopPlay];
+    [filePlay stopPlay];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -11,5 +11,6 @@
 @interface AQLocalFilePlay : NSObject
 
 -(void)startPlay;
+-(void)stopPlay;
 
 @end

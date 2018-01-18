@@ -23,6 +23,12 @@
 		C622BC47200F251300BEC2E4 /* YGAudioFile.m in Sources */ = {isa = PBXBuildFile; fileRef = C622BC46200F251300BEC2E4 /* YGAudioFile.m */; };
 		C622BC49200F3E0F00BEC2E4 /* MP3Sample.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C622BC48200F3E0F00BEC2E4 /* MP3Sample.mp3 */; };
 		C622BC4C200F4F2800BEC2E4 /* AQLocalFilePlay.m in Sources */ = {isa = PBXBuildFile; fileRef = C622BC4B200F4F2800BEC2E4 /* AQLocalFilePlay.m */; };
+		C622BC4E2010487B00BEC2E4 /* M4ASample.m4a in Resources */ = {isa = PBXBuildFile; fileRef = C622BC4D2010487A00BEC2E4 /* M4ASample.m4a */; };
+		C622BC502010488100BEC2E4 /* CAFSample.caf in Resources */ = {isa = PBXBuildFile; fileRef = C622BC4F2010488100BEC2E4 /* CAFSample.caf */; };
+		C622BC52201051E900BEC2E4 /* AACSample.aac in Resources */ = {isa = PBXBuildFile; fileRef = C622BC51201051E800BEC2E4 /* AACSample.aac */; };
+		C622BC5620106CCB00BEC2E4 /* WAVSample.wav in Resources */ = {isa = PBXBuildFile; fileRef = C622BC5520106CCA00BEC2E4 /* WAVSample.wav */; };
+		C622BC5A2010749200BEC2E4 /* FACSample.flac in Resources */ = {isa = PBXBuildFile; fileRef = C622BC592010749200BEC2E4 /* FACSample.flac */; };
+		C622BC5D201082E600BEC2E4 /* PCMDataPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C622BC5C201082E600BEC2E4 /* PCMDataPlayer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +79,13 @@
 		C622BC48200F3E0F00BEC2E4 /* MP3Sample.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = MP3Sample.mp3; sourceTree = "<group>"; };
 		C622BC4A200F4F2800BEC2E4 /* AQLocalFilePlay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AQLocalFilePlay.h; sourceTree = "<group>"; };
 		C622BC4B200F4F2800BEC2E4 /* AQLocalFilePlay.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AQLocalFilePlay.m; sourceTree = "<group>"; };
+		C622BC4D2010487A00BEC2E4 /* M4ASample.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = M4ASample.m4a; sourceTree = "<group>"; };
+		C622BC4F2010488100BEC2E4 /* CAFSample.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = CAFSample.caf; sourceTree = "<group>"; };
+		C622BC51201051E800BEC2E4 /* AACSample.aac */ = {isa = PBXFileReference; lastKnownFileType = file; path = AACSample.aac; sourceTree = "<group>"; };
+		C622BC5520106CCA00BEC2E4 /* WAVSample.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = WAVSample.wav; sourceTree = "<group>"; };
+		C622BC592010749200BEC2E4 /* FACSample.flac */ = {isa = PBXFileReference; lastKnownFileType = file; path = FACSample.flac; sourceTree = "<group>"; };
+		C622BC5B201082E600BEC2E4 /* PCMDataPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PCMDataPlayer.h; sourceTree = "<group>"; };
+		C622BC5C201082E600BEC2E4 /* PCMDataPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PCMDataPlayer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -159,6 +172,11 @@
 		C61F05F32008495F00EC3B26 /* Record&Play */ = {
 			isa = PBXGroup;
 			children = (
+				C622BC592010749200BEC2E4 /* FACSample.flac */,
+				C622BC5520106CCA00BEC2E4 /* WAVSample.wav */,
+				C622BC4F2010488100BEC2E4 /* CAFSample.caf */,
+				C622BC51201051E800BEC2E4 /* AACSample.aac */,
+				C622BC4D2010487A00BEC2E4 /* M4ASample.m4a */,
 				C622BC48200F3E0F00BEC2E4 /* MP3Sample.mp3 */,
 				C622BC3F200CAA7E00BEC2E4 /* test.pcm */,
 				C622BC3D200CAA7300BEC2E4 /* 浪花一朵朵片段8k16bit单声道.pcm */,
@@ -172,6 +190,8 @@
 				C622BC46200F251300BEC2E4 /* YGAudioFile.m */,
 				C622BC4A200F4F2800BEC2E4 /* AQLocalFilePlay.h */,
 				C622BC4B200F4F2800BEC2E4 /* AQLocalFilePlay.m */,
+				C622BC5B201082E600BEC2E4 /* PCMDataPlayer.h */,
+				C622BC5C201082E600BEC2E4 /* PCMDataPlayer.m */,
 			);
 			path = "Record&Play";
 			sourceTree = "<group>";
@@ -290,10 +310,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C622BC52201051E900BEC2E4 /* AACSample.aac in Resources */,
+				C622BC5620106CCB00BEC2E4 /* WAVSample.wav in Resources */,
+				C622BC4E2010487B00BEC2E4 /* M4ASample.m4a in Resources */,
+				C622BC502010488100BEC2E4 /* CAFSample.caf in Resources */,
 				C61F05CE2008493E00EC3B26 /* LaunchScreen.storyboard in Resources */,
 				C622BC3E200CAA7400BEC2E4 /* 浪花一朵朵片段8k16bit单声道.pcm in Resources */,
 				C61F05CB2008493E00EC3B26 /* Assets.xcassets in Resources */,
 				C61F05C92008493D00EC3B26 /* Main.storyboard in Resources */,
+				C622BC5A2010749200BEC2E4 /* FACSample.flac in Resources */,
 				C622BC40200CAA7E00BEC2E4 /* test.pcm in Resources */,
 				C622BC49200F3E0F00BEC2E4 /* MP3Sample.mp3 in Resources */,
 			);
@@ -327,6 +352,7 @@
 				C61F05F92008499D00EC3B26 /* AQRecorderAndPlayer.m in Sources */,
 				C622BC44200DA78F00BEC2E4 /* AQRecorder.m in Sources */,
 				C622BC47200F251300BEC2E4 /* YGAudioFile.m in Sources */,
+				C622BC5D201082E600BEC2E4 /* PCMDataPlayer.m in Sources */,
 				C622BC4C200F4F2800BEC2E4 /* AQLocalFilePlay.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
