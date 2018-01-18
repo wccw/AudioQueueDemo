@@ -12,12 +12,13 @@
 #import "AQPlayer.h"
 #import "AQRecorder.h"
 #import "YGAudioFile.h"
+#import "AQLocalFilePlay.h"
 @interface ViewController ()
 {
     //AQRecorderAndPlayer *aqRecorderPlayer;
     //AQRecorder          *aqRecorder;
     //AQPlayer            *aqPlayer;
-    YGAudioFile         *audioFile;
+    AQLocalFilePlay *filePlay;
 }
 @end
 
@@ -33,11 +34,11 @@
 //    }
 //    aqRecorder = [[AQRecorder alloc]init];
 //    aqPlayer = [[AQPlayer alloc]init];
-    NSString *path = [[NSBundle mainBundle]pathForResource:@"MP3Sample" ofType:@"mp3"];
-    audioFile = [[YGAudioFile alloc]initWithFilePath:path withFileID:kAudioFormatMPEGLayer3];
-   
+    filePlay = [[AQLocalFilePlay alloc]init];
+ 
 }
 - (IBAction)recorderplayerStart:(id)sender {
+    [filePlay startPlay];
     //[aqRecorderPlayer beganRecorderPlayer];
 }
 
