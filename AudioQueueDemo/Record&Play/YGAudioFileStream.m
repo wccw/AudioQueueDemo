@@ -89,27 +89,47 @@ static void YGAudioFileStreamPacketsProc(void *inClientData,
 }
 
 -(void)handleAudioFileStreamPropertyListenerProc:(AudioFileStreamPropertyID)inPropertyID {
-    //kAudioFileStreamProperty_ReadyToProducePackets
-    if (inPropertyID == kAudioFileStreamProperty_ReadyToProducePackets) {
-        readyToProducePacket = YES;
-    }
-    //kAudioFileStreamProperty_DataFormat
-    else if (inPropertyID == kAudioFileStreamProperty_DataFormat) {
-        UInt32 formatSize = sizeof(foramt);
-        AudioFileStreamGetProperty(audioFileStreamId, kAudioFileStreamProperty_DataFormat, &formatSize, &foramt);
-    }
-    //kAudioFileStreamProperty_BitRate
-    else if (inPropertyID == kAudioFileStreamProperty_BitRate) {
-        UInt32 bitRateSize = sizeof(bitRate);
-        AudioFileStreamGetProperty(audioFileStreamId, kAudioFileStreamProperty_BitRate, &bitRateSize, &bitRate);
-    }
-    //kAudioFileStreamProperty_MaximumPacketSize
-    else if (inPropertyID == kAudioFileStreamProperty_PacketSizeUpperBound) {
-        UInt32 packetSize = sizeof(maxPacketSize);
-        OSStatus status = AudioFileStreamGetProperty(audioFileStreamId, kAudioFileStreamProperty_MaximumPacketSize, &packetSize, &maxPacketSize);
-        if (status != noErr || maxPacketSize == 0) {
-            status = AudioFileStreamGetProperty(audioFileStreamId, kAudioFileStreamProperty_MaximumPacketSize, &packetSize, &maxPacketSize);
+    
+    switch (inPropertyID) {
+        case kAudioFileStreamProperty_ReadyToProducePackets: {
+            //get cookie size
+            UInt32 cookieSize;
+            AudioFileStreamGetPropertyInfo(audioFileStreamId, kAudioFileStreamProperty_MagicCookieData, &cookieSize, NULL);
+            
+            //get cookie data
+            void *cookData = malloc(cookieSize);
+            AudioFileStreamGetProperty(audioFileStreamId, kAudioFileStreamProperty_MagicCookieData, &cookieSize, cookData);
+            
+            //set cookie on queue
+            AudioQueueSetProperty(<#AudioQueueRef  _Nonnull inAQ#>, <#AudioQueuePropertyID inID#>, <#const void * _Nonnull inData#>, <#UInt32 inDataSize#>)
+            break;
         }
+        case kAudioFileStreamProperty_DataFormat: {
+            UInt32 propertySize = sizeof(foramt);
+            AudioFileStreamGetProperty(audioFileStreamId, kAudioFileStreamProperty_DataFormat, &propertySize, &foramt);
+            break;
+        }
+        case kAudioFileStreamProperty_PacketSizeUpperBound: {
+            UInt32 propertySize = sizeof(maxPacketSize);
+            OSStatus status = AudioFileStreamGetProperty(audioFileStreamId, kAudioFileStreamProperty_MaximumPacketSize, &propertySize, &maxPacketSize);
+            if (status != noErr || maxPacketSize == 0) {
+                status = AudioFileStreamGetProperty(audioFileStreamId, kAudioFileStreamProperty_MaximumPacketSize, &propertySize, &maxPacketSize);
+            }
+            break;
+        }
+        case kAudioFileStreamProperty_BitRate: {
+            UInt32 propertySize = sizeof(bitRate);
+            AudioFileStreamGetProperty(audioFileStreamId, kAudioFileStreamProperty_BitRate, &propertySize, &bitRate);
+            break;
+        }
+        case kAudioFileStreamProperty_AudioDataByteCount: {
+            UInt32 propertySize = sizeof(dataByteCount);
+            AudioFileStreamGetProperty(audioFileStreamId, kAudioFileStreamProperty_AudioDataByteCount, &propertySize, &dataByteCount);
+        }
+        
+ 
+        default:
+            break;
     }
 }
 

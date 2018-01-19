@@ -24,7 +24,6 @@ typedef struct {
 
 @interface AQPlayer() {
     PlayState playState;
-    CFURLRef  fileURL;
 }
 @end
 
@@ -55,8 +54,7 @@ typedef struct {
     playState.bufferSize = 2048;
     NSString *docPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
     NSString *filePath = [docPath stringByAppendingPathComponent:@"recording.caf"];
-    fileURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, (CFStringRef)filePath, kCFURLPOSIXPathStyle, false);
-    //AudioFileCreateWithURL
+    CFURLRef fileURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, (CFStringRef)filePath, kCFURLPOSIXPathStyle, false);
     if (!fileURL) {
         NSLog(@"can't parse fiel path");
         return;
