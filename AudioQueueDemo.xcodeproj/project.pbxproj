@@ -28,6 +28,8 @@
 		C622BC5A2010749200BEC2E4 /* FACSample.flac in Resources */ = {isa = PBXBuildFile; fileRef = C622BC592010749200BEC2E4 /* FACSample.flac */; };
 		C622BC5D201082E600BEC2E4 /* PCMFilePlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C622BC5C201082E600BEC2E4 /* PCMFilePlayer.m */; };
 		C622BC63201096D700BEC2E4 /* AudioFilePlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C622BC62201096D700BEC2E4 /* AudioFilePlayer.m */; };
+		C622BC652011815500BEC2E4 /* record.pcm in Resources */ = {isa = PBXBuildFile; fileRef = C622BC642011815500BEC2E4 /* record.pcm */; };
+		C622BC672011903D00BEC2E4 /* record.txt in Resources */ = {isa = PBXBuildFile; fileRef = C622BC662011903D00BEC2E4 /* record.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -84,6 +86,8 @@
 		C622BC5C201082E600BEC2E4 /* PCMFilePlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PCMFilePlayer.m; sourceTree = "<group>"; };
 		C622BC61201096D700BEC2E4 /* AudioFilePlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioFilePlayer.h; sourceTree = "<group>"; };
 		C622BC62201096D700BEC2E4 /* AudioFilePlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioFilePlayer.m; sourceTree = "<group>"; };
+		C622BC642011815500BEC2E4 /* record.pcm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = record.pcm; sourceTree = "<group>"; };
+		C622BC662011903D00BEC2E4 /* record.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = record.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -170,6 +174,8 @@
 		C61F05F32008495F00EC3B26 /* Record&Play */ = {
 			isa = PBXGroup;
 			children = (
+				C622BC662011903D00BEC2E4 /* record.txt */,
+				C622BC642011815500BEC2E4 /* record.pcm */,
 				C622BC592010749200BEC2E4 /* FACSample.flac */,
 				C622BC5520106CCA00BEC2E4 /* WAVSample.wav */,
 				C622BC4F2010488100BEC2E4 /* CAFSample.caf */,
@@ -310,6 +316,8 @@
 				C622BC52201051E900BEC2E4 /* AACSample.aac in Resources */,
 				C622BC5620106CCB00BEC2E4 /* WAVSample.wav in Resources */,
 				C622BC4E2010487B00BEC2E4 /* M4ASample.m4a in Resources */,
+				C622BC672011903D00BEC2E4 /* record.txt in Resources */,
+				C622BC652011815500BEC2E4 /* record.pcm in Resources */,
 				C622BC502010488100BEC2E4 /* CAFSample.caf in Resources */,
 				C61F05CE2008493E00EC3B26 /* LaunchScreen.storyboard in Resources */,
 				C61F05CB2008493E00EC3B26 /* Assets.xcassets in Resources */,
