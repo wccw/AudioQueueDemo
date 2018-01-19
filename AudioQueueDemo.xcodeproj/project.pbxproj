@@ -30,6 +30,7 @@
 		C622BC63201096D700BEC2E4 /* AudioFilePlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C622BC62201096D700BEC2E4 /* AudioFilePlayer.m */; };
 		C622BC652011815500BEC2E4 /* record.pcm in Resources */ = {isa = PBXBuildFile; fileRef = C622BC642011815500BEC2E4 /* record.pcm */; };
 		C622BC672011903D00BEC2E4 /* record.txt in Resources */ = {isa = PBXBuildFile; fileRef = C622BC662011903D00BEC2E4 /* record.txt */; };
+		C622BC6A2011D11F00BEC2E4 /* YGAudioFileStream.m in Sources */ = {isa = PBXBuildFile; fileRef = C622BC692011D11F00BEC2E4 /* YGAudioFileStream.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -88,6 +89,8 @@
 		C622BC62201096D700BEC2E4 /* AudioFilePlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioFilePlayer.m; sourceTree = "<group>"; };
 		C622BC642011815500BEC2E4 /* record.pcm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = record.pcm; sourceTree = "<group>"; };
 		C622BC662011903D00BEC2E4 /* record.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = record.txt; sourceTree = "<group>"; };
+		C622BC682011D11F00BEC2E4 /* YGAudioFileStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YGAudioFileStream.h; sourceTree = "<group>"; };
+		C622BC692011D11F00BEC2E4 /* YGAudioFileStream.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YGAudioFileStream.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -191,6 +194,8 @@
 				C61F05F82008499D00EC3B26 /* AQRecorderAndPlayer.m */,
 				C622BC45200F251300BEC2E4 /* YGAudioFile.h */,
 				C622BC46200F251300BEC2E4 /* YGAudioFile.m */,
+				C622BC682011D11F00BEC2E4 /* YGAudioFileStream.h */,
+				C622BC692011D11F00BEC2E4 /* YGAudioFileStream.m */,
 				C622BC5B201082E600BEC2E4 /* PCMFilePlayer.h */,
 				C622BC5C201082E600BEC2E4 /* PCMFilePlayer.m */,
 				C622BC61201096D700BEC2E4 /* AudioFilePlayer.h */,
@@ -355,6 +360,7 @@
 				C61F05C32008493D00EC3B26 /* AppDelegate.m in Sources */,
 				C61F05F92008499D00EC3B26 /* AQRecorderAndPlayer.m in Sources */,
 				C622BC44200DA78F00BEC2E4 /* AQRecorder.m in Sources */,
+				C622BC6A2011D11F00BEC2E4 /* YGAudioFileStream.m in Sources */,
 				C622BC47200F251300BEC2E4 /* YGAudioFile.m in Sources */,
 				C622BC5D201082E600BEC2E4 /* PCMFilePlayer.m in Sources */,
 				C622BC63201096D700BEC2E4 /* AudioFilePlayer.m in Sources */,
