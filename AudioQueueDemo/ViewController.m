@@ -15,20 +15,56 @@
 #import "YGAudioFile.h"
 #import "PCMFilePlayer.h"
 #import "AudioFilePlayer.h"
-@interface ViewController ()
+#import "YGAudioFileStream.h"
+#import "YGAudioOutputQueue.h"
+@interface ViewController ()<audioFileStreamDelegate>
 {
     AQRecorder    *record;
     PCMFilePlayer *pcmPlay;
     AudioFilePlayer *filePlay;
+    
+    
+    YGAudioFileStream *fileStream;
+    YGAudioOutputQueue *outQueue;
+    FILE *pcmFile;
+    NSData *pcmData;
 }
 @end
 
 @implementation ViewController
 
+-(void)audioStream:(YGAudioFileStream *)audioStream audioData:(NSData *)audioData {
+    [outQueue playWithData:audioData];
+}
+
+-(void)audioStream:(YGAudioFileStream *)audioStream withFormat:(AudioStreamBasicDescription)format withSize:(UInt32)size withCookie:(NSData *)cookie {
+    outQueue = [[YGAudioOutputQueue alloc]initWithFormat:format withBufferSize:size withMagicCookie:cookie];
+}
+
+//open file
+-(void)openAudioFile {
+    NSString *path = [[NSBundle mainBundle]pathForResource:@"AACSample" ofType:@"aac"];
+    pcmFile = fopen([path UTF8String], "r");
+    if (pcmFile) {
+        void *pcmDataBuffer = malloc(300000);
+        size_t result = fread(pcmDataBuffer, 1, 300000, pcmFile);
+        pcmData = [NSData dataWithBytes:pcmDataBuffer length:300000];
+        free(pcmDataBuffer);
+        NSLog(@"result is:%zu",result);
+    } else {
+        NSLog(@"open pcm file fail");
+    }
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    record = [[AQRecorder alloc]init];
     
+    [self openAudioFile];
+  
+    fileStream = [[YGAudioFileStream alloc]initWithDelegate:self];
+    [fileStream parseData:pcmData];
+    
+    /*
     NSString *aacPath = [[NSBundle mainBundle]pathForResource:@"AACSample" ofType:@"aac"];
     filePlay = [[AudioFilePlayer alloc]initWithPath:aacPath];
     
@@ -36,13 +72,12 @@
     NSString *docPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
     NSString *pcmPath = [docPath stringByAppendingPathComponent:@"recording.pcm"];
     pcmPlay = [[PCMFilePlayer alloc]initWithPcmFilePath:pcmPath];
+     */
 }
 - (IBAction)recorderplayerStart:(id)sender {
-    //[pcmPlay startPlay];
 }
 
 - (IBAction)recorderplayerStop:(id)sender {
-    //[pcmPlay stopPlay];
 }
 
 - (IBAction)recorderStart:(id)sender {
@@ -55,12 +90,12 @@
 
 - (IBAction)playerStart:(id)sender {
     //[filePlay startPlay];
-    [pcmPlay startPlay];
+    //[pcmPlay startPlay];
 }
 
 - (IBAction)playerStop:(id)sender {
     //[filePlay stopPlay];
-    [pcmPlay stopPlay];
+    //[pcmPlay stopPlay];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -70,3 +105,4 @@
 
 
 @end
+

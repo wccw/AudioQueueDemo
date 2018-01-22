@@ -85,59 +85,7 @@
 
 
 
-/*
--(void)parseData:(BOOL *)isEof {
-    UInt32 ioNumPackets = 15;
-    UInt32 ioNumBytes = ioNumPackets * _maxPacketSize;
-    void *outBuffer = (void *)malloc(ioNumBytes);
-    
-    AudioStreamPacketDescription *outPacketDescriptions = NULL;
-    if (_format.mFormatID != kAudioFormatLinearPCM) {
-        UInt32 descSize = sizeof(AudioStreamPacketDescription) *ioNumPackets;
-        outPacketDescriptions = (AudioStreamPacketDescription *)malloc(descSize);
-        status = AudioFileReadPacketData(_fileId, false, &ioNumBytes, outPacketDescriptions, _dataOffset, &ioNumPackets, outBuffer);
-    } else {
-        status = AudioFileReadPacketData(_fileId, false, &ioNumBytes, outPacketDescriptions, _dataOffset, &ioNumPackets, outBuffer);
-    }
-    if (status != noErr) {
-        *isEof = status = kAudioFileEndOfFileError;
-        free(outBuffer);
-    }
-    if (ioNumBytes == 0) {
-        *isEof = YES;
-    }
-    _dataOffset += ioNumPackets;
-    if (ioNumPackets > 0) {
-        NSMutableArray *parsedDataArray = [[NSMutableArray alloc]init];
-        for (int i = 0; i < ioNumPackets; ++i) {
-            AudioStreamPacketDescription packetDescription;
-            if (outPacketDescriptions) {
-                packetDescription = outPacketDescriptions[i];
-            } else {
-                packetDescription.mStartOffset = i * _format.mBytesPerPacket;
-                packetDescription.mDataByteSize = _format.mBytesPerPacket;
-                packetDescription.mVariableFramesInPacket = _format.mFramesPerPacket;
-            }
-            
-        }
-    }
-}
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 
 
 
 

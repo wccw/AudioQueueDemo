@@ -7,7 +7,6 @@
 //
 
 #import "YGAudioFileStream.h"
-#import <AudioToolbox/AudioToolbox.h>
 #import "YGAudioOutputQueue.h"
 
 const float kBufferDurationSeconds = 0.3;
@@ -99,8 +98,8 @@ static void YGAudioFileStreamPacketsProc(void *inClientData,
             AudioFileStreamGetProperty(audioFileStreamId, kAudioFileStreamProperty_MagicCookieData, &cookieSize, cookData);
             cookieData = [NSData dataWithBytes:cookData length:cookieSize];
             free(cookData);
-            if (self.delegate && [self.delegate respondsToSelector:@selector(audioFileStream:readyToProducePackets:)]) {
-                [self.delegate audioFileStream:self readyToProducePackets:true];
+            if (self.delegate && [self.delegate respondsToSelector:@selector(audioStream:withFormat:withSize:withCookie:)]) {
+                [self.delegate audioStream:self withFormat:format withSize:bufferSize withCookie:cookieData];
             }
             break;
         }
@@ -131,16 +130,16 @@ static void YGAudioFileStreamPacketsProc(void *inClientData,
         return;
     }
     
+    int packetLen = inNumberBytes / inNumberPackets;
+    void *dst = malloc(packetLen);
     for (int i = 0; i < inNumberPackets; ++i) {
-        int packetLen = inNumberBytes / inNumberPackets;
-        void *dst = malloc(packetLen);
-        memcpy(dst, inInputData, i * packetLen);
+        memcpy(dst, inInputData + packetLen * i, packetLen);
         NSData *dstData = [NSData dataWithBytes:dst length:packetLen];
-        free(dst);
-        if (self.delegate && [self.delegate respondsToSelector:@selector(audioFileStream:audioData:)]) {
-            [self.delegate audioFileStream:self audioData:dstData];
+        if (self.delegate && [self.delegate respondsToSelector:@selector(audioStream:audioData:)]) {
+            [self.delegate audioStream:self audioData:dstData];
         }
     }
+    free(dst);
 }
 
 -(void)calculateBufferSize {
