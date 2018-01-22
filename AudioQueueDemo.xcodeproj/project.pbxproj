@@ -31,6 +31,7 @@
 		C622BC652011815500BEC2E4 /* record.pcm in Resources */ = {isa = PBXBuildFile; fileRef = C622BC642011815500BEC2E4 /* record.pcm */; };
 		C622BC672011903D00BEC2E4 /* record.txt in Resources */ = {isa = PBXBuildFile; fileRef = C622BC662011903D00BEC2E4 /* record.txt */; };
 		C622BC6A2011D11F00BEC2E4 /* YGAudioFileStream.m in Sources */ = {isa = PBXBuildFile; fileRef = C622BC692011D11F00BEC2E4 /* YGAudioFileStream.m */; };
+		C622BC6D2015802A00BEC2E4 /* YGAudioOutputQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = C622BC6C2015802A00BEC2E4 /* YGAudioOutputQueue.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,6 +92,8 @@
 		C622BC662011903D00BEC2E4 /* record.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = record.txt; sourceTree = "<group>"; };
 		C622BC682011D11F00BEC2E4 /* YGAudioFileStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YGAudioFileStream.h; sourceTree = "<group>"; };
 		C622BC692011D11F00BEC2E4 /* YGAudioFileStream.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YGAudioFileStream.m; sourceTree = "<group>"; };
+		C622BC6B2015802A00BEC2E4 /* YGAudioOutputQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YGAudioOutputQueue.h; sourceTree = "<group>"; };
+		C622BC6C2015802A00BEC2E4 /* YGAudioOutputQueue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YGAudioOutputQueue.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -196,6 +199,8 @@
 				C622BC46200F251300BEC2E4 /* YGAudioFile.m */,
 				C622BC682011D11F00BEC2E4 /* YGAudioFileStream.h */,
 				C622BC692011D11F00BEC2E4 /* YGAudioFileStream.m */,
+				C622BC6B2015802A00BEC2E4 /* YGAudioOutputQueue.h */,
+				C622BC6C2015802A00BEC2E4 /* YGAudioOutputQueue.m */,
 				C622BC5B201082E600BEC2E4 /* PCMFilePlayer.h */,
 				C622BC5C201082E600BEC2E4 /* PCMFilePlayer.m */,
 				C622BC61201096D700BEC2E4 /* AudioFilePlayer.h */,
@@ -362,6 +367,7 @@
 				C622BC44200DA78F00BEC2E4 /* AQRecorder.m in Sources */,
 				C622BC6A2011D11F00BEC2E4 /* YGAudioFileStream.m in Sources */,
 				C622BC47200F251300BEC2E4 /* YGAudioFile.m in Sources */,
+				C622BC6D2015802A00BEC2E4 /* YGAudioOutputQueue.m in Sources */,
 				C622BC5D201082E600BEC2E4 /* PCMFilePlayer.m in Sources */,
 				C622BC63201096D700BEC2E4 /* AudioFilePlayer.m in Sources */,
 			);
