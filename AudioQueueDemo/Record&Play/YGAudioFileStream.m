@@ -129,7 +129,7 @@ static void YGAudioFileStreamPacketsProc(void *inClientData,
     if (inNumberBytes == 0 || inNumberPackets == 0) {
         return;
     }
-    
+    NSLog(@"packets:%d",inNumberBytes);
     int packetLen = inNumberBytes / inNumberPackets;
     void *dst = malloc(packetLen);
     for (int i = 0; i < inNumberPackets; ++i) {
