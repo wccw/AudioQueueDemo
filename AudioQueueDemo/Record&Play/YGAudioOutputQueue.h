@@ -16,6 +16,6 @@
                withBufferSize:(UInt32)size
               withMagicCookie:(NSData *)cookie;
 
--(void)playWithData:(NSData *)data;
+-(void)playWithData:(NSData *)data withPacketDes:(AudioStreamPacketDescription)packetDes;
 
 @end

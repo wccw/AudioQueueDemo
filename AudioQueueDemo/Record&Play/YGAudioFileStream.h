@@ -8,11 +8,12 @@
 
 #import <Foundation/Foundation.h>
 #import <AudioToolbox/AudioToolbox.h>
+
 @class YGAudioFileStream;
 
 @protocol audioFileStreamDelegate <NSObject>
 
--(void)audioStream:(YGAudioFileStream *)audioStream audioData:(NSData *)audioData;
+-(void)audioStream:(YGAudioFileStream *)audioStream audioData:(NSData *)audioData withPacketDes:(AudioStreamPacketDescription)packetDes;
 -(void)audioStream:(YGAudioFileStream *)audioStream withFormat:(AudioStreamBasicDescription)format withSize:(UInt32)size withCookie:(NSData *)cookie ;
 
 @end

@@ -36,6 +36,8 @@
 	</array>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>USE MICROPHONE</string>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

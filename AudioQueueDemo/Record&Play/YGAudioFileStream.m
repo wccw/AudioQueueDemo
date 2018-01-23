@@ -14,7 +14,7 @@ const float kBufferDurationSeconds = 0.3;
 @interface YGAudioFileStream() {
     AudioFileStreamID           audioFileStreamId;
     AudioFileTypeID             audioFileTypeId;
-    AudioStreamBasicDescription format;
+    AudioStreamBasicDescription audioFormat;
     
     NSData *                    cookieData;
     BOOL                        readyToProducePacket;
@@ -36,16 +36,16 @@ const float kBufferDurationSeconds = 0.3;
     return self;
 }
 
-
 //Create a new audio file stream parser.
 -(BOOL)open {
+    audioFileTypeId = kAudioFileM4AType;
     OSStatus status = AudioFileStreamOpen((__bridge void * _Nullable)(self),
                                           YGAudioFileStreamPropertyListenerProc,
                                           YGAudioFileStreamPacketsProc,
                                           audioFileTypeId,
                                           &audioFileStreamId);
     if (status != noErr) {
-        NSLog(@"AudioFileStreamOpen Failed");
+        NSLog(@"AudioFileStreamOpenFailed");
         audioFileStreamId = NULL;
         return false;
     }
@@ -60,9 +60,10 @@ const float kBufferDurationSeconds = 0.3;
 
 //Parse data
 -(BOOL)parseData:(NSData *)data {
-    
+    NSLog(@"began parse data");
     OSStatus status = AudioFileStreamParseBytes(audioFileStreamId, (UInt32)data.length, data.bytes, 0);
     if (status != noErr) {
+        NSLog(@"AudioFileStreamParseFailed");
         return false;
     }
     return true;
@@ -88,24 +89,33 @@ static void YGAudioFileStreamPacketsProc(void *inClientData,
 }
 
 -(void)handleAudioFileStreamPropertyListenerProc:(AudioFileStreamPropertyID)inPropertyID {
-    
+    NSLog(@"parse property");
     switch (inPropertyID) {
         case kAudioFileStreamProperty_ReadyToProducePackets: {
             UInt32 cookieSize;
-            AudioFileStreamGetPropertyInfo(audioFileStreamId, kAudioFileStreamProperty_MagicCookieData, &cookieSize, NULL);
+            OSStatus status = AudioFileStreamGetPropertyInfo(audioFileStreamId, kAudioFileStreamProperty_MagicCookieData, &cookieSize, NULL);
+            if (status != noErr) {
+                NSLog(@"AudioFileGetMagicCookieInfoDataError");
+                return;
+            }
             
             void *cookData = malloc(cookieSize);
-            AudioFileStreamGetProperty(audioFileStreamId, kAudioFileStreamProperty_MagicCookieData, &cookieSize, cookData);
+            status = AudioFileStreamGetProperty(audioFileStreamId, kAudioFileStreamProperty_MagicCookieData, &cookieSize, cookData);
+            if (status != noErr) {
+                NSLog(@"AudioFileGetMagicCookieDataError");
+                return;
+            }
+            
             cookieData = [NSData dataWithBytes:cookData length:cookieSize];
             free(cookData);
             if (self.delegate && [self.delegate respondsToSelector:@selector(audioStream:withFormat:withSize:withCookie:)]) {
-                [self.delegate audioStream:self withFormat:format withSize:bufferSize withCookie:cookieData];
+                [self.delegate audioStream:self withFormat:audioFormat withSize:bufferSize withCookie:cookieData];
             }
             break;
         }
         case kAudioFileStreamProperty_DataFormat: {
-            UInt32 propertySize = sizeof(format);
-            AudioFileStreamGetProperty(audioFileStreamId, kAudioFileStreamProperty_DataFormat, &propertySize, &format);
+            UInt32 propertySize = sizeof(audioFormat);
+            AudioFileStreamGetProperty(audioFileStreamId, kAudioFileStreamProperty_DataFormat, &propertySize, &audioFormat);
             [self calculateBufferSize];
             break;
         }
@@ -126,27 +136,45 @@ static void YGAudioFileStreamPacketsProc(void *inClientData,
                                      numPackets:(UInt32)inNumberPackets
                                       inputData:(const void *)inInputData
                                       packetDes:(AudioStreamPacketDescription *)inPacketDescriptions {
+    NSLog(@"parse packet");
     if (inNumberBytes == 0 || inNumberPackets == 0) {
+        NSLog(@"AudioFileStreamPacketsEmpty");
         return;
     }
-    NSLog(@"packets:%d",inNumberBytes);
-    int packetLen = inNumberBytes / inNumberPackets;
-    void *dst = malloc(packetLen);
+    
+    //
+    if (inPacketDescriptions == NULL) {
+        NSLog(@"packetDescription is null");
+        UInt32 packetSize = inNumberBytes / inNumberPackets;
+        AudioStreamPacketDescription *descriptions = (AudioStreamPacketDescription *)malloc(sizeof(AudioStreamPacketDescription) * inNumberPackets);
+        for (int i = 0; i < inNumberPackets; i++) {
+            UInt32 packetOffset = packetSize * i;
+            descriptions[i].mStartOffset = packetOffset;
+            descriptions[i].mVariableFramesInPacket = 0;
+            if (i == inNumberPackets - 1) {
+                descriptions[i].mDataByteSize = inNumberBytes - packetOffset;
+            } else {
+                descriptions[i].mDataByteSize = packetSize;
+            }
+        }
+        inPacketDescriptions = descriptions;
+    }
+    
     for (int i = 0; i < inNumberPackets; ++i) {
-        memcpy(dst, inInputData + packetLen * i, packetLen);
-        NSData *dstData = [NSData dataWithBytes:dst length:packetLen];
-        if (self.delegate && [self.delegate respondsToSelector:@selector(audioStream:audioData:)]) {
-            [self.delegate audioStream:self audioData:dstData];
+        SInt64 startOffset = inPacketDescriptions[i].mStartOffset;
+        UInt32 dataByteSize = inPacketDescriptions[i].mDataByteSize;
+        NSData *dstData = [NSData dataWithBytes:inInputData + startOffset length:dataByteSize];
+        if (self.delegate && [self.delegate respondsToSelector:@selector(audioStream:audioData:withPacketDes:)]) {
+            [self.delegate audioStream:self audioData:dstData withPacketDes:inPacketDescriptions[i]];
         }
     }
-    free(dst);
 }
 
 -(void)calculateBufferSize {
     static const int maxBufferSize = 0x10000;
     static const int minBufferSize = 0x4000;
-    if (format.mFramesPerPacket) {
-        Float64 numPacketsForTime = format.mSampleRate / format.mFramesPerPacket * kBufferDurationSeconds;
+    if (audioFormat.mFramesPerPacket) {
+        Float64 numPacketsForTime = audioFormat.mSampleRate / audioFormat.mFramesPerPacket * kBufferDurationSeconds;
         bufferSize = numPacketsForTime * maxPacketSize;
     } else {
         bufferSize = maxBufferSize > maxPacketSize ? maxBufferSize : maxPacketSize;
