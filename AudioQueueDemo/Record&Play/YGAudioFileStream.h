@@ -10,18 +10,33 @@
 #import <AudioToolbox/AudioToolbox.h>
 
 @class YGAudioFileStream;
+@class YGAudioPacket;
 
+//delegate
 @protocol audioFileStreamDelegate <NSObject>
 
--(void)audioStream:(YGAudioFileStream *)audioStream audioData:(NSData *)audioData withPacketDes:(AudioStreamPacketDescription)packetDes;
--(void)audioStream:(YGAudioFileStream *)audioStream withFormat:(AudioStreamBasicDescription)format withSize:(UInt32)size withCookie:(NSData *)cookie ;
+-(void)audioStreamPacketData:(NSData *)data withDescription:(AudioStreamPacketDescription)packetDes;
+-(void)audioStreamReadyProducePacket;
 
 @end
 
 @interface YGAudioFileStream : NSObject
 
+@property (nonatomic, assign, readonly) AudioStreamBasicDescription format;
+@property (nonatomic, assign, readonly) UInt32                      bufferSize;
+@property (nonatomic, retain, readonly) NSData                      *magicCookie;
+
 -(instancetype)initWithDelegate:(id<audioFileStreamDelegate>) delegate;
 
 -(BOOL)parseData:(NSData *)data;
+
+@end
+
+@interface YGAudioPacket : NSObject
+
+@property (nonatomic, assign, readonly) AudioStreamPacketDescription packetDescription;
+@property (nonatomic, retain, readonly) NSData *packetData;
+
+-(instancetype)initWithPacketData:(NSData *)packetData withPacketDes:(AudioStreamPacketDescription)packetDes;
 
 @end

@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <AudioToolbox/AudioToolbox.h>
+#import "YGAudioFileStream.h"
 
 @interface YGAudioOutputQueue : NSObject
 
@@ -16,6 +17,6 @@
                withBufferSize:(UInt32)size
               withMagicCookie:(NSData *)cookie;
 
--(void)playWithData:(NSData *)data withPacketDes:(AudioStreamPacketDescription)packetDes;
+-(void)playWithPacket:(NSData *)data withDescription:(AudioStreamPacketDescription)description;
 
 @end

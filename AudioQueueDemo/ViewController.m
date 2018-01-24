@@ -25,7 +25,7 @@
     PCMFilePlayer *pcmPlay;
     AudioFilePlayer *filePlay;
     
-    YGAudioFileStream *fileStream;
+    YGAudioFileStream *stream;
     YGAudioOutputQueue *outQueue;
     FILE *file;
     UInt64 fileLength;
@@ -34,61 +34,53 @@
 
 @implementation ViewController
 
--(void)audioStream:(YGAudioFileStream *)audioStream audioData:(NSData *)audioData withPacketDes:(AudioStreamPacketDescription)packetDes{
-    [outQueue playWithData:audioData withPacketDes:packetDes];
+-(void)audioStreamPacketData:(NSData *)data withDescription:(AudioStreamPacketDescription)packetDes {
+    [outQueue playWithPacket:data withDescription:packetDes];
 }
 
--(void)audioStream:(YGAudioFileStream *)audioStream withFormat:(AudioStreamBasicDescription)format withSize:(UInt32)size withCookie:(NSData *)cookie {
-    outQueue = [[YGAudioOutputQueue alloc]initWithFormat:format withBufferSize:size withMagicCookie:cookie];
+-(void)audioStreamReadyProducePacket {
+    outQueue = [[YGAudioOutputQueue alloc]initWithFormat:stream.format withBufferSize:stream.bufferSize withMagicCookie:stream.magicCookie];
 }
 
 //open file
 -(void)openAudioFile {
-    NSString *path = [[NSBundle mainBundle]pathForResource:@"M4ASample" ofType:@"m4a"];
+    //mp3(520,exist packetdes速度快) ,m4a(360,exist packetdes速度快), flac(7000, exist packetdes正常),wav打开失败
+    //caf(700, exist packetdes速度快) aac(360,exist packetdes没声音)
+    NSString *path = [[NSBundle mainBundle]pathForResource:@"AACSample" ofType:@"aac"];
     NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:path];
     fileLength = [[handle availableData]length];
     file = fopen([path UTF8String], "r");
     if (!file) {
-         NSLog(@"open file fail");
+        NSLog(@"open file fail");
     }
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     [self openAudioFile];
-    
-    fileStream = [[YGAudioFileStream alloc]initWithDelegate:self];
+    stream = [[YGAudioFileStream alloc]initWithDelegate:self];
     
     /*
-    NSString *aacPath = [[NSBundle mainBundle]pathForResource:@"AACSample" ofType:@"aac"];
-    filePlay = [[AudioFilePlayer alloc]initWithPath:aacPath];
-    
-    //NSString *pcmPath = [[NSBundle mainBundle]pathForResource:@"record" ofType:@"pcm"];
-    NSString *docPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
-    NSString *pcmPath = [docPath stringByAppendingPathComponent:@"recording.pcm"];
-    pcmPlay = [[PCMFilePlayer alloc]initWithPcmFilePath:pcmPath];
+     NSString *aacPath = [[NSBundle mainBundle]pathForResource:@"AACSample" ofType:@"aac"];
+     filePlay = [[AudioFilePlayer alloc]initWithPath:aacPath];
+     
+     //NSString *pcmPath = [[NSBundle mainBundle]pathForResource:@"record" ofType:@"pcm"];
+     NSString *docPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+     NSString *pcmPath = [docPath stringByAppendingPathComponent:@"recording.pcm"];
+     pcmPlay = [[PCMFilePlayer alloc]initWithPcmFilePath:pcmPath];
      */
 }
 
 - (IBAction)recorderplayerStart:(id)sender {
-    /*
-    int length = 300000;
-    void *pcmDataBuffer = malloc(length);
-    fread(pcmDataBuffer, 1, length, file);
-    NSData *audioData = [NSData dataWithBytes:pcmDataBuffer length:length];
-    free(pcmDataBuffer);
-    [fileStream parseData:audioData];
-     */
     
     int length = 3000;
     for (int i = 0; i < fileLength; i = i + length) {
-        NSLog(@"for i is %d",i);
+        //NSLog(@"for i is %d",i);
         void *pcmDataBuffer = malloc(length);
         fread(pcmDataBuffer, 1, length, file);
         NSData *audioData = [NSData dataWithBytes:pcmDataBuffer length:length];
         free(pcmDataBuffer);
-        [fileStream parseData:audioData];
+        [stream parseData:audioData];
     }
 }
 
@@ -117,7 +109,5 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-
 @end
 
