@@ -147,8 +147,12 @@ static void YGAudioFileStreamPacketsProc(void *inClientData,
         return;
     }
     
+    NSLog(@"bytes:%u packets:%d packetSize:%d",(unsigned int)inNumberBytes,inNumberPackets,inNumberBytes / inNumberPackets);
+    
+    //如果为空，按照CBR处理
+    
     if (inPacketDescriptions == NULL) {
-        NSLog(@"packetDescription is null");
+        NSLog(@"AudioStremPacketDescriptionNull");
         UInt32 packetSize = inNumberBytes / inNumberPackets;
         AudioStreamPacketDescription *descriptions = (AudioStreamPacketDescription *)malloc(sizeof(AudioStreamPacketDescription) * inNumberPackets);
         for (int i = 0; i < inNumberPackets; i++) {
@@ -168,7 +172,6 @@ static void YGAudioFileStreamPacketsProc(void *inClientData,
         SInt64 startOffset = inPacketDescriptions[i].mStartOffset;
         UInt32 dataByteSize = inPacketDescriptions[i].mDataByteSize;
         NSData *dstData = [NSData dataWithBytes:inInputData + startOffset length:dataByteSize];
-        //YGAudioPacket *packet = [[YGAudioPacket alloc]initWithPacketData:dstData withPacketDes:inPacketDescriptions[i]];
         if (self.delegate && [self.delegate respondsToSelector:@selector(audioStreamPacketData:withDescription:)]) {
             [self.delegate audioStreamPacketData:dstData withDescription:inPacketDescriptions[i]];
         }
@@ -196,12 +199,4 @@ static void YGAudioFileStreamPacketsProc(void *inClientData,
 
 @end
 
-@implementation YGAudioPacket
--(instancetype)initWithPacketData:(NSData *)packetData withPacketDes:(AudioStreamPacketDescription)packetDes {
-    if (self = [super init]) {
-        _packetData = packetData;
-        _packetDescription = packetDes;
-    }
-    return self;
-}
-@end
+ 

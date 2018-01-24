@@ -10,7 +10,6 @@
 #import <AudioToolbox/AudioToolbox.h>
 
 @class YGAudioFileStream;
-@class YGAudioPacket;
 
 //delegate
 @protocol audioFileStreamDelegate <NSObject>
@@ -32,11 +31,4 @@
 
 @end
 
-@interface YGAudioPacket : NSObject
 
-@property (nonatomic, assign, readonly) AudioStreamPacketDescription packetDescription;
-@property (nonatomic, retain, readonly) NSData *packetData;
-
--(instancetype)initWithPacketData:(NSData *)packetData withPacketDes:(AudioStreamPacketDescription)packetDes;
-
-@end
