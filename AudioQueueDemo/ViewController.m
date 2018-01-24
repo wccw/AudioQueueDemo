@@ -44,9 +44,9 @@
 
 //open file
 -(void)openAudioFile {
-    //mp3(520,exist packetdes速度快) ,m4a(360,exist packetdes速度快), flac(7000, exist packetdes正常),wav打开失败
-    //caf(700, exist packetdes速度快) aac(360,exist packetdes没声音)
-    NSString *path = [[NSBundle mainBundle]pathForResource:@"AACSample" ofType:@"aac"];
+    //mp3(true) ,m4a(true), flac(ture),wav(false)
+    //caf(true) aac(ture)
+    NSString *path = [[NSBundle mainBundle]pathForResource:@"WAVSample" ofType:@"wav"];
     NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:path];
     fileLength = [[handle availableData]length];
     file = fopen([path UTF8String], "r");
