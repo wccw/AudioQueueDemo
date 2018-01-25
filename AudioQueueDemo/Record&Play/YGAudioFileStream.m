@@ -83,7 +83,6 @@ static void YGAudioFileStreamPacketsProc(void *inClientData,
 }
 
 -(void)handleAudioFileStreamPropertyListenerProc:(AudioFileStreamPropertyID)inPropertyID {
-    NSLog(@"parse property");
     
     switch (inPropertyID) {
         case kAudioFileStreamProperty_ReadyToProducePackets: {
@@ -147,12 +146,9 @@ static void YGAudioFileStreamPacketsProc(void *inClientData,
         return;
     }
     
-    NSLog(@"bytes:%u packets:%d packetSize:%d",(unsigned int)inNumberBytes,inNumberPackets,inNumberBytes / inNumberPackets);
-    
     //如果为空，按照CBR处理
-    
     if (inPacketDescriptions == NULL) {
-        NSLog(@"AudioStremPacketDescriptionNull");
+        //NSLog(@"AudioStremPacketDescriptionNull");
         UInt32 packetSize = inNumberBytes / inNumberPackets;
         AudioStreamPacketDescription *descriptions = (AudioStreamPacketDescription *)malloc(sizeof(AudioStreamPacketDescription) * inNumberPackets);
         for (int i = 0; i < inNumberPackets; i++) {
@@ -166,11 +162,13 @@ static void YGAudioFileStreamPacketsProc(void *inClientData,
             }
         }
         inPacketDescriptions = descriptions;
-    }  
+    }
     
     for (int i = 0; i < inNumberPackets; ++i) {
         SInt64 startOffset = inPacketDescriptions[i].mStartOffset;
         UInt32 dataByteSize = inPacketDescriptions[i].mDataByteSize;
+        //NSLog(@"bytes:%u packets:%d packetSize:%d",(unsigned int)inNumberBytes,inNumberPackets,dataByteSize);
+
         NSData *dstData = [NSData dataWithBytes:inInputData + startOffset length:dataByteSize];
         if (self.delegate && [self.delegate respondsToSelector:@selector(audioStreamPacketData:withDescription:)]) {
             [self.delegate audioStreamPacketData:dstData withDescription:inPacketDescriptions[i]];

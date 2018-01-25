@@ -18,18 +18,52 @@ const int kAudioQueueBufferCount = 3;
     UInt32                       audioBufferFillSize;
     UInt32                       audioBufferIndex;
     UInt32                       audioBufferPacketNum;
-    AudioStreamPacketDescription audioStreamPacketDesc[1000];
+    AudioStreamPacketDescription audioStreamPacketDesc[10];
     NSLock                       *syncLock;
 }
 @end
 
 @implementation YGAudioOutputQueue
 
+-(void)playWithPacket:(NSData *)data withDescription:(AudioStreamPacketDescription)description {
+    
+    [syncLock lock];
+    //buffer fill finished
+    if (audioBufferSize - audioBufferFillSize < data.length) {
+        NSLog(@"Finish a packet %d index:%d packetnum:%d",audioBufferFillSize, audioBufferIndex,audioBufferPacketNum);
+        
+        OSStatus status = AudioQueueEnqueueBuffer(audioQueue, audioBuffer[audioBufferIndex], audioBufferPacketNum, audioStreamPacketDesc);
+        if (status != noErr) {
+            NSLog(@"AudioQueueEnqueueBufferFailed");
+            return;
+        }
+        
+        audioBufferIndex = (++audioBufferIndex) % kAudioQueueBufferCount;
+        audioBufferPacketNum = 0;
+        audioBufferFillSize = 0;
+        while (audioBufferUsed[audioBufferIndex]);
+    }
+    AudioQueueBufferRef currentBuffer = audioBuffer[audioBufferIndex];
+    audioBufferUsed[audioBufferIndex] = true;
+    memcmp(currentBuffer->mAudioData + audioBufferFillSize, data.bytes, data.length);
+    currentBuffer->mAudioDataByteSize = audioBufferFillSize + (UInt32)data.length;
+
+    description.mStartOffset = audioBufferFillSize;
+    NSLog(@"fileSize:%d",audioBufferFillSize);
+    audioStreamPacketDesc[audioBufferPacketNum] = description;
+    //audioStreamPacketDesc[audioBufferPacketNum].mStartOffset = audioBufferFillSize;
+    
+    audioBufferFillSize += data.length;
+    audioBufferPacketNum += 1;
+    
+    [syncLock unlock];
+}
+
+
 -(instancetype)initWithFormat:(AudioStreamBasicDescription)format withBufferSize:(UInt32)size withMagicCookie:(NSData *)cookie {
     if (self = [super init]) {
         syncLock = [[NSLock alloc]init];
-        audioBufferSize = size;
-        NSLog(@"bufferSize:%d",size);
+        audioBufferSize = 3000;
         [self audioQueueWithFormat:format withCookie:cookie];
     }
     return self;
@@ -129,39 +163,7 @@ const int kAudioQueueBufferCount = 3;
     }
 */
 
--(void)playWithPacket:(NSData *)data withDescription:(AudioStreamPacketDescription)description {
-    [syncLock lock];
-    if (audioBufferSize - audioBufferFillSize >= data.length) {
-        <#statements#>
-    }
-    
-    
-    int i = 0;
-    while (true) {
-        if (!audioBufferUsed[i]) {
-            audioBufferUsed[i] = true;
-            break;
-        } else {
-            i++;
-            if (i >= kAudioQueueBufferCount ) {
-                i = 0;
-            }
-        }
-    }
-    
-    NSLog(@"playData:%lu---%lld",data.length, description.mStartOffset);
-    memcpy(audioBuffer[i]->mAudioData, data.bytes, data.length);
-    audioBuffer[i]->mAudioDataByteSize = (UInt32)data.length;
-    description.mStartOffset = 0;
-    OSStatus status = AudioQueueEnqueueBuffer(audioQueue, audioBuffer[i], 1, &description);
-    if (status != noErr) {
-        NSLog(@"AudioQueueEnqueueBufferFailed");
-        return;
-    }
-    
-    [syncLock unlock];
-}
-   
+
 /*
 -(void)playWithPacket:(NSData *)data withDescription:(AudioStreamPacketDescription)description {
     [syncLock lock];
@@ -191,7 +193,8 @@ const int kAudioQueueBufferCount = 3;
     
     [syncLock unlock];
 }
-*/
+ */
+
 #pragma mark this is delegate
 
 static void YGAudioQueueOutputCallback(void *inUserData, AudioQueueRef outAQ, AudioQueueBufferRef outBuffer) {

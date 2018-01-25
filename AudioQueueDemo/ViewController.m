@@ -46,7 +46,7 @@
 -(void)openAudioFile {
     //mp3(true) ,m4a(true), flac(ture),wav(false)
     //caf(true) aac(ture)
-    NSString *path = [[NSBundle mainBundle]pathForResource:@"MP3Sample" ofType:@"mp3"];
+    NSString *path = [[NSBundle mainBundle]pathForResource:@"AACSample" ofType:@"aac"];
     NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:path];
     fileLength = [[handle availableData]length];
     file = fopen([path UTF8String], "r");
@@ -73,9 +73,8 @@
 
 - (IBAction)recorderplayerStart:(id)sender {
     
-    int length = 50000;
+    int length = 3000;
     for (int i = 0; i < fileLength; i = i + length) {
-        //NSLog(@"for i is %d",i);
         void *pcmDataBuffer = malloc(length);
         fread(pcmDataBuffer, 1, length, file);
         NSData *audioData = [NSData dataWithBytes:pcmDataBuffer length:length];
