@@ -43,9 +43,9 @@ const int kAudioQueueBufferCount = 3;
         }
     }
     audioBuffer[i]->mAudioDataByteSize = buffer->mAudioDataByteSize;
+    audioBuffer[i]->mPacketDescriptionCount = 1000;
     memcmp(audioBuffer[i]->mAudioData, buffer->mAudioData, buffer->mAudioDataByteSize);
-    NSLog(@"buffersize:%lu",buffer->mAudioDataByteSize);
-    OSStatus status = AudioQueueEnqueueBuffer(audioQueue, audioBuffer[i], 1000, desc);
+    OSStatus status = AudioQueueEnqueueBuffer(audioQueue, audioBuffer[i], 0, NULL);
     if (status != noErr) {
         NSLog(@"AudioQueueEnqueueBufferFailed %d",status);
         return;
