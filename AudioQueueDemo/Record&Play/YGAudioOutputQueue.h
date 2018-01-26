@@ -19,6 +19,7 @@
 
 -(void)playWithPackets:(NSData *)data withDescriptions:(AudioStreamPacketDescription*)descriptions;
 -(void)playWithPacket:(NSData *)data withDescription:(AudioStreamPacketDescription)description;
+-(void)playWithBuffer:(AudioQueueBufferRef)buffer withDesc:(const AudioStreamPacketDescription *)desc;
 
 @end
 

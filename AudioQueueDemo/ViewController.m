@@ -7,34 +7,29 @@
 //
 
 #import "ViewController.h"
-#import "AQRecorderAndPlayer.h"
 #import <AVFoundation/AVFoundation.h>
 
-#import "AQPlayer.h"
-#import "AQRecorder.h"
-#import "YGAudioFile.h"
-#import "PCMFilePlayer.h"
-#import "AudioFilePlayer.h"
 #import "YGAudioFileStream.h"
 #import "YGAudioOutputQueue.h"
+#import "AQRecorder.h"
 
 
 @interface ViewController ()<audioFileStreamDelegate>
 {
-    AQRecorder    *record;
-    PCMFilePlayer *pcmPlay;
-    AudioFilePlayer *filePlay;
-    
     YGAudioFileStream *stream;
+    AQRecorder *recorder;
     YGAudioOutputQueue *outQueue;
     FILE *file;
     UInt64 fileLength;
+    
+ 
 }
 @end
 
 @implementation ViewController
 
 -(void)audioStreamPacketData:(NSData *)data withDescriptions:(AudioStreamPacketDescription*)packetsDes {
+     //[self performSelector:@selector(delayMethod) withObject:nil afterDelay:0];
     [outQueue playWithPackets:data withDescriptions:packetsDes];
 }
 
@@ -50,7 +45,7 @@
 -(void)openAudioFile {
     //mp3(true) ,m4a(true), flac(ture),wav(false)
     //caf(true) aac(ture)
-    NSString *path = [[NSBundle mainBundle]pathForResource:@"AACSample" ofType:@"aac"];
+    NSString *path = [[NSBundle mainBundle]pathForResource:@"PCMSample" ofType:@"pcm"];
     NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:path];
     fileLength = [[handle availableData]length];
     file = fopen([path UTF8String], "r");
@@ -61,22 +56,12 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self openAudioFile];
-    stream = [[YGAudioFileStream alloc]initWithDelegate:self];
-    
-    /*
-     NSString *aacPath = [[NSBundle mainBundle]pathForResource:@"AACSample" ofType:@"aac"];
-     filePlay = [[AudioFilePlayer alloc]initWithPath:aacPath];
-     
-     //NSString *pcmPath = [[NSBundle mainBundle]pathForResource:@"record" ofType:@"pcm"];
-     NSString *docPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
-     NSString *pcmPath = [docPath stringByAppendingPathComponent:@"recording.pcm"];
-     pcmPlay = [[PCMFilePlayer alloc]initWithPcmFilePath:pcmPath];
-     */
+    recorder = [[AQRecorder alloc]init];
+    //[self openAudioFile];
+    //stream = [[YGAudioFileStream alloc]initWithDelegate:self];
 }
 
 - (IBAction)recorderplayerStart:(id)sender {
-    
     int length = 3000;
     for (int i = 0; i < fileLength; i = i + length) {
         void *pcmDataBuffer = malloc(length);
@@ -88,14 +73,14 @@
 }
 
 - (IBAction)recorderplayerStop:(id)sender {
+    
 }
 
 - (IBAction)recorderStart:(id)sender {
-    [record startRecorder];
+    [recorder startRecorder];
 }
 
 - (IBAction)recorderStop:(id)sender {
-    [record stopRecorder];
 }
 
 - (IBAction)playerStart:(id)sender {
@@ -112,5 +97,15 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+/*
+ NSString *aacPath = [[NSBundle mainBundle]pathForResource:@"AACSample" ofType:@"aac"];
+ filePlay = [[AudioFilePlayer alloc]initWithPath:aacPath];
+ 
+ //NSString *pcmPath = [[NSBundle mainBundle]pathForResource:@"record" ofType:@"pcm"];
+ NSString *docPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+ NSString *pcmPath = [docPath stringByAppendingPathComponent:@"recording.pcm"];
+ pcmPlay = [[PCMFilePlayer alloc]initWithPcmFilePath:pcmPath];
+ */
 @end
 

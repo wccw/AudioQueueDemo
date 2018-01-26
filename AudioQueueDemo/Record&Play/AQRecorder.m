@@ -6,110 +6,134 @@
 //  Copyright © 2018年 lianluo.com. All rights reserved.
 //
 
+/*
+ NSString *docPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+ NSString *filePath = [docPath stringByAppendingPathComponent:@"recording.pcm"];
+ NSLog(@"file:%@",filePath);
+ if (!filePath) {
+ NSLog(@"error filepath");
+ }
+ recordState.file = fopen([filePath UTF8String], "wb");
+ if (!recordState.file) {
+ NSLog(@"open file failed");
+ }
+ */
 #import "AQRecorder.h"
 #import <AudioToolbox/AudioToolbox.h>
 #import <AVFoundation/AVFoundation.h>
+#import "YGAudioOutputQueue.h"
 
 static const int kNumberBuffers = 3;
 
-typedef struct {
-    AudioQueueRef               queue;
-    AudioQueueBufferRef         buffers[kNumberBuffers];
-    AudioStreamBasicDescription format;
-    AudioFileID                 fileId;
-    SInt64                      currentPacket;
+@interface AQRecorder() {
+    AudioQueueRef               audioQueue;
+    AudioQueueBufferRef         audioBuffers[kNumberBuffers];
+    AudioStreamBasicDescription audioFormat;
     UInt32                      bufferSize;
     BOOL                        recording;
-    FILE                        *file;
-} RecordState;
-
-@interface AQRecorder() {
-    RecordState recordState;
-    CFURLRef    fileURL;
-}
+    
+    YGAudioOutputQueue *audioOutput;
+ }
 @end
 
 @implementation AQRecorder
 
 -(instancetype)init {
     if (self = [super init]) {
-        //NSString *filePath = [[NSBundle mainBundle]pathForResource:@"records" ofType:@"txt"];
-        NSString *docPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
-        NSString *filePath = [docPath stringByAppendingPathComponent:@"recording.pcm"];
-        NSLog(@"file:%@",filePath);
-        if (!filePath) {
-            NSLog(@"error filepath");
-        }
-        recordState.file = fopen([filePath UTF8String], "wb");
-        if (!recordState.file) {
-            NSLog(@"open file failed");
-        }
+        [self setFormat];
         [self setAudio];
     }
     return self;
 }
 
--(AudioStreamBasicDescription *)setFormat  {
-    AudioStreamBasicDescription *format = &recordState.format;
-    format->mFormatID = kAudioFormatLinearPCM;
-    format->mSampleRate = 8000.0;
-    format->mFramesPerPacket = 1;
-    format->mChannelsPerFrame = 1;
-    format->mBitsPerChannel = 16;
-    format->mBytesPerFrame = format->mBitsPerChannel * format->mChannelsPerFrame / 8;
-    format->mBytesPerPacket = format->mFramesPerPacket * format->mBytesPerFrame;
-    format->mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
-    return format;
+-(void)setFormat {
+    audioFormat.mFormatID = kAudioFormatLinearPCM;
+    audioFormat.mSampleRate = 8000.0;
+    audioFormat.mFramesPerPacket = 1;
+    audioFormat.mChannelsPerFrame = 1;
+    audioFormat.mBitsPerChannel = 16;
+    audioFormat.mBytesPerFrame = audioFormat.mBitsPerChannel * audioFormat.mChannelsPerFrame / 8;
+    audioFormat.mBytesPerPacket = audioFormat.mFramesPerPacket * audioFormat.mBytesPerFrame;
+    audioFormat.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
 }
 
 -(void)setAudio {
     
-    recordState.currentPacket= 0;
-    
-    recordState.bufferSize = 2048;
+    bufferSize = 2048;
     
     //create audio queue
-    AudioQueueNewInput([self setFormat], HandleInputBuffer, &recordState, NULL, NULL, 0, &recordState.queue);
-    
-    //crate audio buffers
-    for (int i = 0; i < kNumberBuffers; ++i) {
-        AudioQueueAllocateBuffer(recordState.queue, recordState.bufferSize, &recordState.buffers[i]);
-        AudioQueueEnqueueBuffer(recordState.queue, recordState.buffers[i], 0, NULL);
+    OSStatus status = AudioQueueNewInput(&audioFormat, HandleInputBuffer, (__bridge void * _Nullable)(self), NULL, NULL, 0, &audioQueue);
+    if (status != noErr) {
+        NSLog(@"AudioQueueNewInputError");
+        return;
     }
     
-    //crate audio file
-    //NSString *docPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
-    //NSString *filePath = [docPath stringByAppendingPathComponent:@"recording.caf"];
-    //fileURL = CFURLCreateWithString(kCFAllocatorDefault, (CFStringRef)filePath, NULL);
-    //AudioFileCreateWithURL(fileURL, kAudioFileCAFType, &recordState.format, kAudioFileFlags_EraseFile, &recordState.fileId);
+    //create audio buffers
+    for (int i = 0; i < kNumberBuffers; ++i) {
+        status = AudioQueueAllocateBuffer(audioQueue, bufferSize, &audioBuffers[i]);
+        if (status != noErr) {
+            NSLog(@"AudioQueueAllocateBufferError");
+            return;
+        }
+        status = AudioQueueEnqueueBuffer(audioQueue, audioBuffers[i], 0, NULL);
+        if (status != noErr) {
+            NSLog(@"AudioQueueEnqueeuBufferError");
+            return;
+        }
+    }
 }
 
 -(void)startRecorder {
-    AudioQueueStart(recordState.queue, NULL);
-    recordState.recording = YES;
+    OSStatus status = AudioQueueStart(audioQueue, NULL);
+    if (status != noErr) {
+        NSLog(@"AudioQueueStartError");
+        return;
+    }
+    recording = YES;
 }
 
 -(void)stopRecorder {
-    if (recordState.recording) {
-        AudioQueueStop(recordState.queue, true);
-        AudioQueueDispose(recordState.queue, true);
+    if (recording) {
+        AudioQueueStop(audioQueue, true);
+        AudioQueueDispose(audioQueue, true);
     }
-    fclose(recordState.file);
 }
 
 static void HandleInputBuffer(void *inUserData, AudioQueueRef inAQ, AudioQueueBufferRef inBuffer, const AudioTimeStamp *inStartTime, UInt32 inNumPackets, const AudioStreamPacketDescription *inPacketDesc) {
-    NSLog(@"write data");
-    RecordState *recordState = (RecordState *)inUserData;
-    NSData *data = [NSData dataWithBytes:inBuffer->mAudioData length:inBuffer->mAudioDataByteSize];
-    NSLog(@"datasize:%lu",data.length);
-    if (inNumPackets > 0) {
-        size_t len = fwrite(inBuffer->mAudioData, 1, inBuffer->mAudioDataByteSize, recordState->file);
-        NSLog(@"len:%zu",len);
-        //AudioFileWritePackets(recordState->fileId, false, inBuffer->mAudioDataByteSize, inPacketDesc, recordState->currentPacket, &inNumPackets, inBuffer->mAudioData);
-        recordState->currentPacket += inNumPackets;
+    AQRecorder *recorder = (__bridge AQRecorder *)(inUserData);
+    [recorder handleInputBuffer:inBuffer withPacketDesc:inPacketDesc withNumPackets:inNumPackets];
+}
+
+-(void)handleInputBuffer:(AudioQueueBufferRef)inBuffer withPacketDesc:(const AudioStreamPacketDescription*)inPacketDesc withNumPackets:(UInt32)inNumPackets {
+    
+    if (inPacketDesc == NULL) {
+        //NSLog(@"AudioStremPacketDescriptionNull");
+        UInt32 packetSize = inBuffer->mAudioDataByteSize / inNumPackets;
+        AudioStreamPacketDescription *descriptions = (AudioStreamPacketDescription *)malloc(sizeof(AudioStreamPacketDescription) * inNumPackets);
+        for (int i = 0; i < inNumPackets; i++) {
+            UInt32 packetOffset = packetSize * i;
+            descriptions[i].mStartOffset = packetOffset;
+            descriptions[i].mVariableFramesInPacket = 0;
+            if (i == inNumPackets - 1) {
+                descriptions[i].mDataByteSize = inNumPackets - packetOffset;
+            } else {
+                descriptions[i].mDataByteSize = packetSize;
+            }
+        }
+        inPacketDesc = descriptions;
     }
-    if (recordState->recording) {
-        AudioQueueEnqueueBuffer(inAQ, inBuffer, 0, NULL);
+    
+    if (!audioOutput) {
+        audioOutput = [[YGAudioOutputQueue alloc]initWithFormat:audioFormat withBufferSize:2048 withMagicCookie:nil];
+    }
+    [audioOutput playWithBuffer:inBuffer withDesc:inPacketDesc];
+    
+    if (recording) {
+        OSStatus status = AudioQueueEnqueueBuffer(audioQueue, inBuffer, 0, NULL);
+        if (status != noErr) {
+            NSLog(@"AudioQueeuEnqueueBufferError");
+            return;
+        }
     }
 }
 

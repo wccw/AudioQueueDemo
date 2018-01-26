@@ -14,7 +14,6 @@ const float kBufferDurationSeconds = 0.3;
 @interface YGAudioFileStream() {
     AudioFileStreamID           audioFileStreamId;
     UInt32                      maxPacketSize;
-    
 }
 
 @property (nonatomic, assign) id<audioFileStreamDelegate> delegate;
@@ -163,23 +162,24 @@ static void YGAudioFileStreamPacketsProc(void *inClientData,
         }
         inPacketDescriptions = descriptions;
     }
-    /*
+    
     NSData *dstData = [NSData dataWithBytes:inInputData length:inNumberBytes];
     if (self.delegate && [self.delegate respondsToSelector:@selector(audioStreamPacketData:withDescriptions:)]) {
         [self.delegate audioStreamPacketData:dstData withDescriptions:inPacketDescriptions];
     }
-     */
-    
+ 
+    /*
     for (int i = 0; i < inNumberPackets; i++) {
         SInt64 startOffset = inPacketDescriptions[i].mStartOffset;
         UInt32 dataByteSize = inPacketDescriptions[i].mDataByteSize;
-        NSLog(@"bytes:%u packets:%d packetSize:%d offset:%lld",(unsigned int)inNumberBytes,inNumberPackets,dataByteSize,startOffset);
-
+        //NSLog(@"bytes:%u packets:%d packetSize:%d offset:%lld",(unsigned int)inNumberBytes,inNumberPackets,dataByteSize,startOffset);
+   
         NSData *dstData = [NSData dataWithBytes:inInputData + startOffset length:dataByteSize];
         if (self.delegate && [self.delegate respondsToSelector:@selector(audioStreamPacketData:withDescription:)]) {
             [self.delegate audioStreamPacketData:dstData withDescription:inPacketDescriptions[i]];
         }
     }
+     */
 }
 
 -(void)calculateBufferSize {
