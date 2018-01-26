@@ -34,6 +34,10 @@
 
 @implementation ViewController
 
+-(void)audioStreamPacketData:(NSData *)data withDescriptions:(AudioStreamPacketDescription*)packetsDes {
+    [outQueue playWithPackets:data withDescriptions:packetsDes];
+}
+
 -(void)audioStreamPacketData:(NSData *)data withDescription:(AudioStreamPacketDescription)packetDes {
     [outQueue playWithPacket:data withDescription:packetDes];
 }

@@ -14,6 +14,7 @@
 //delegate
 @protocol audioFileStreamDelegate <NSObject>
 
+-(void)audioStreamPacketData:(NSData *)data withDescriptions:(AudioStreamPacketDescription*)packetsDes;
 -(void)audioStreamPacketData:(NSData *)data withDescription:(AudioStreamPacketDescription)packetDes;
 -(void)audioStreamReadyProducePacket;
 

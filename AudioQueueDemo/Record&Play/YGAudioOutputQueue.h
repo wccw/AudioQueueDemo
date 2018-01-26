@@ -17,12 +17,9 @@
                withBufferSize:(UInt32)size
               withMagicCookie:(NSData *)cookie;
 
+-(void)playWithPackets:(NSData *)data withDescriptions:(AudioStreamPacketDescription*)descriptions;
 -(void)playWithPacket:(NSData *)data withDescription:(AudioStreamPacketDescription)description;
 
 @end
 
-@interface YGAudioPacket : NSObject
-@property (nonatomic, assign) AudioStreamPacketDescription packetDescription;
-@property (nonatomic, retain) NSData *data;
--(instancetype)initWithData:(NSData *)data withDescription:(AudioStreamPacketDescription)description;
-@end
+ 

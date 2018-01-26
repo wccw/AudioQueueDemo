@@ -163,11 +163,17 @@ static void YGAudioFileStreamPacketsProc(void *inClientData,
         }
         inPacketDescriptions = descriptions;
     }
+    /*
+    NSData *dstData = [NSData dataWithBytes:inInputData length:inNumberBytes];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(audioStreamPacketData:withDescriptions:)]) {
+        [self.delegate audioStreamPacketData:dstData withDescriptions:inPacketDescriptions];
+    }
+     */
     
-    for (int i = 0; i < inNumberPackets; ++i) {
+    for (int i = 0; i < inNumberPackets; i++) {
         SInt64 startOffset = inPacketDescriptions[i].mStartOffset;
         UInt32 dataByteSize = inPacketDescriptions[i].mDataByteSize;
-        //NSLog(@"bytes:%u packets:%d packetSize:%d",(unsigned int)inNumberBytes,inNumberPackets,dataByteSize);
+        NSLog(@"bytes:%u packets:%d packetSize:%d offset:%lld",(unsigned int)inNumberBytes,inNumberPackets,dataByteSize,startOffset);
 
         NSData *dstData = [NSData dataWithBytes:inInputData + startOffset length:dataByteSize];
         if (self.delegate && [self.delegate respondsToSelector:@selector(audioStreamPacketData:withDescription:)]) {
