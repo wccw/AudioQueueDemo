@@ -12,12 +12,14 @@
 #import "YGAudioFileStream.h"
 #import "YGAudioOutputQueue.h"
 #import "AQRecorder.h"
+#import "PCMFilePlayer.h"
 
 
 @interface ViewController ()<audioFileStreamDelegate>
 {
     YGAudioFileStream *stream;
     AQRecorder *recorder;
+    PCMFilePlayer *player;
     YGAudioOutputQueue *outQueue;
     FILE *file;
     UInt64 fileLength;
@@ -56,7 +58,20 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    NSError *error;
+    // AVAudioSessionCategoryPlayback
+    // AVAudioSessionCategoryRecord
+    // AVAudioSessionCategoryPlayAndRecord
+    [[AVAudioSession sharedInstance] setActive:YES error:nil];
+    [[AVAudioSession sharedInstance]setCategory:AVAudioSessionCategoryPlayAndRecord error:&error];
+    if (error != nil) {
+        NSLog(@"This is error:%@",error.localizedDescription);
+    }
+     
     recorder = [[AQRecorder alloc]init];
+    NSString *docpath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+    NSString *filePath = [docpath stringByAppendingPathComponent:@"record.pcm"];
+    player = [[PCMFilePlayer alloc]initWithPcmFilePath:filePath];
     //[self openAudioFile];
     //stream = [[YGAudioFileStream alloc]initWithDelegate:self];
 }
@@ -81,16 +96,15 @@
 }
 
 - (IBAction)recorderStop:(id)sender {
+    [recorder stopRecorder];
 }
 
 - (IBAction)playerStart:(id)sender {
-    //[filePlay startPlay];
-    //[pcmPlay startPlay];
+    [player startPlay];
 }
 
 - (IBAction)playerStop:(id)sender {
-    //[filePlay stopPlay];
-    //[pcmPlay stopPlay];
+    [player stopPlay];
 }
 
 - (void)didReceiveMemoryWarning {

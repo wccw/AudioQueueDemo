@@ -63,6 +63,7 @@
     for (int i = 0; i < BUFFER_NUM; i ++) {
         AudioQueueAllocateBuffer(audioQueue, BUFFER_SIZE, &audioBuffers[i]);
     }
+    
 }
 
 static void AQAudioQueueOutputCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBufferRef inBuffer) {

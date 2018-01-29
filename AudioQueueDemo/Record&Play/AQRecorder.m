@@ -31,6 +31,7 @@ static const int kNumberBuffers = 3;
     AudioStreamBasicDescription audioFormat;
     UInt32                      bufferSize;
     BOOL                        recording;
+    FILE                        *file;
     
     YGAudioOutputQueue *audioOutput;
  }
@@ -42,8 +43,19 @@ static const int kNumberBuffers = 3;
     if (self = [super init]) {
         [self setFormat];
         [self setAudio];
+        [self localPath];
     }
     return self;
+}
+
+-(void)localPath {
+    NSString *docpath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+    NSString *filePath = [docpath stringByAppendingPathComponent:@"record.pcm"];
+    file = fopen([filePath UTF8String], "wb");
+    if (file) {
+        NSLog(@"file success");
+    }
+    NSLog(@"path:%@",filePath);
 }
 
 -(void)setFormat {
@@ -93,6 +105,7 @@ static const int kNumberBuffers = 3;
 }
 
 -(void)stopRecorder {
+    fclose(file);
     if (recording) {
         AudioQueueStop(audioQueue, true);
         AudioQueueDispose(audioQueue, true);
@@ -105,15 +118,15 @@ static void HandleInputBuffer(void *inUserData, AudioQueueRef inAQ, AudioQueueBu
 }
 
 -(void)handleInputBuffer:(AudioQueueBufferRef)inBuffer withPacketDesc:(const AudioStreamPacketDescription*)inPacketDesc withNumPackets:(UInt32)inNumPackets {
-    
+    /*
     if (inPacketDesc == NULL) {
-        //NSLog(@"AudioStremPacketDescriptionNull");
+        NSLog(@"AudioStremPacketDescriptionNull");
         UInt32 packetSize = inBuffer->mAudioDataByteSize / inNumPackets;
         AudioStreamPacketDescription *descriptions = (AudioStreamPacketDescription *)malloc(sizeof(AudioStreamPacketDescription) * inNumPackets);
         for (int i = 0; i < inNumPackets; i++) {
             UInt32 packetOffset = packetSize * i;
             descriptions[i].mStartOffset = packetOffset;
-            descriptions[i].mVariableFramesInPacket = 0;
+            descriptions[i].mVariableFramesInPacket = 1;
             if (i == inNumPackets - 1) {
                 descriptions[i].mDataByteSize = inNumPackets - packetOffset;
             } else {
@@ -122,11 +135,17 @@ static void HandleInputBuffer(void *inUserData, AudioQueueRef inAQ, AudioQueueBu
         }
         inPacketDesc = descriptions;
     }
+    */
     
+    size_t len = fwrite(inBuffer->mAudioData, 1, inBuffer->mAudioDataByteSize, file);
+    NSLog(@"len is %zu",len);
+    
+    /*
     if (!audioOutput) {
         audioOutput = [[YGAudioOutputQueue alloc]initWithFormat:audioFormat withBufferSize:2048 withMagicCookie:nil];
     }
     [audioOutput playWithBuffer:inBuffer withDesc:inPacketDesc];
+    */
     
     if (recording) {
         OSStatus status = AudioQueueEnqueueBuffer(audioQueue, inBuffer, 0, NULL);
@@ -135,6 +154,7 @@ static void HandleInputBuffer(void *inUserData, AudioQueueRef inAQ, AudioQueueBu
             return;
         }
     }
+
 }
 
 @end
