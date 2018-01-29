@@ -23,8 +23,6 @@
     YGAudioOutputQueue *outQueue;
     FILE *file;
     UInt64 fileLength;
-    
- 
 }
 @end
 
@@ -62,8 +60,9 @@
     // AVAudioSessionCategoryPlayback
     // AVAudioSessionCategoryRecord
     // AVAudioSessionCategoryPlayAndRecord
+    //http://www.mamicode.com/info-detail-2019952.html
     [[AVAudioSession sharedInstance] setActive:YES error:nil];
-    [[AVAudioSession sharedInstance]setCategory:AVAudioSessionCategoryPlayAndRecord error:&error];
+    [[AVAudioSession sharedInstance]setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionDefaultToSpeaker error:&error];
     if (error != nil) {
         NSLog(@"This is error:%@",error.localizedDescription);
     }

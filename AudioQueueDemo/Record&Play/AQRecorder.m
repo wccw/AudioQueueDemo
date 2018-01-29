@@ -118,7 +118,7 @@ static void HandleInputBuffer(void *inUserData, AudioQueueRef inAQ, AudioQueueBu
 }
 
 -(void)handleInputBuffer:(AudioQueueBufferRef)inBuffer withPacketDesc:(const AudioStreamPacketDescription*)inPacketDesc withNumPackets:(UInt32)inNumPackets {
-    /*
+    
     if (inPacketDesc == NULL) {
         NSLog(@"AudioStremPacketDescriptionNull");
         UInt32 packetSize = inBuffer->mAudioDataByteSize / inNumPackets;
@@ -135,7 +135,7 @@ static void HandleInputBuffer(void *inUserData, AudioQueueRef inAQ, AudioQueueBu
         }
         inPacketDesc = descriptions;
     }
-    */
+    
     
     size_t len = fwrite(inBuffer->mAudioData, 1, inBuffer->mAudioDataByteSize, file);
     NSLog(@"len is %zu",len);
