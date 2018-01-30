@@ -6,34 +6,24 @@
 //  Copyright © 2018年 lianluo.com. All rights reserved.
 //
 
-/*
- NSString *docPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
- NSString *filePath = [docPath stringByAppendingPathComponent:@"recording.pcm"];
- NSLog(@"file:%@",filePath);
- if (!filePath) {
- NSLog(@"error filepath");
- }
- recordState.file = fopen([filePath UTF8String], "wb");
- if (!recordState.file) {
- NSLog(@"open file failed");
- }
- */
 #import "AQRecorder.h"
 #import <AudioToolbox/AudioToolbox.h>
 #import <AVFoundation/AVFoundation.h>
 #import "YGAudioOutputQueue.h"
+#import "YGPCMDataPlayer.h"
 
 static const int kNumberBuffers = 3;
+static const int kBufferSize = 2048;
 
 @interface AQRecorder() {
     AudioQueueRef               audioQueue;
     AudioQueueBufferRef         audioBuffers[kNumberBuffers];
     AudioStreamBasicDescription audioFormat;
-    UInt32                      bufferSize;
     BOOL                        recording;
     FILE                        *file;
     
     YGAudioOutputQueue *audioOutput;
+    YGPCMDataPlayer *pcmPlayer;
  }
 @end
 
@@ -71,8 +61,6 @@ static const int kNumberBuffers = 3;
 
 -(void)setAudio {
     
-    bufferSize = 2048;
-    
     //create audio queue
     OSStatus status = AudioQueueNewInput(&audioFormat, HandleInputBuffer, (__bridge void * _Nullable)(self), NULL, NULL, 0, &audioQueue);
     if (status != noErr) {
@@ -82,7 +70,7 @@ static const int kNumberBuffers = 3;
     
     //create audio buffers
     for (int i = 0; i < kNumberBuffers; ++i) {
-        status = AudioQueueAllocateBuffer(audioQueue, bufferSize, &audioBuffers[i]);
+        status = AudioQueueAllocateBuffer(audioQueue, kBufferSize, &audioBuffers[i]);
         if (status != noErr) {
             NSLog(@"AudioQueueAllocateBufferError");
             return;
@@ -118,27 +106,13 @@ static void HandleInputBuffer(void *inUserData, AudioQueueRef inAQ, AudioQueueBu
 }
 
 -(void)handleInputBuffer:(AudioQueueBufferRef)inBuffer withPacketDesc:(const AudioStreamPacketDescription*)inPacketDesc withNumPackets:(UInt32)inNumPackets {
-    
-    if (inPacketDesc == NULL) {
-        NSLog(@"AudioStremPacketDescriptionNull");
-        UInt32 packetSize = inBuffer->mAudioDataByteSize / inNumPackets;
-        AudioStreamPacketDescription *descriptions = (AudioStreamPacketDescription *)malloc(sizeof(AudioStreamPacketDescription) * inNumPackets);
-        for (int i = 0; i < inNumPackets; i++) {
-            UInt32 packetOffset = packetSize * i;
-            descriptions[i].mStartOffset = packetOffset;
-            descriptions[i].mVariableFramesInPacket = 1;
-            if (i == inNumPackets - 1) {
-                descriptions[i].mDataByteSize = inNumPackets - packetOffset;
-            } else {
-                descriptions[i].mDataByteSize = packetSize;
-            }
-        }
-        inPacketDesc = descriptions;
+
+    //size_t len = fwrite(inBuffer->mAudioData, 1, inBuffer->mAudioDataByteSize, file);
+    //NSLog(@"len is %zu",len);
+    if (!pcmPlayer) {
+        pcmPlayer = [[YGPCMDataPlayer alloc]init];
     }
-    
-    
-    size_t len = fwrite(inBuffer->mAudioData, 1, inBuffer->mAudioDataByteSize, file);
-    NSLog(@"len is %zu",len);
+    [pcmPlayer play:inBuffer->mAudioData length:inBuffer->mAudioDataByteSize];
     
     /*
     if (!audioOutput) {

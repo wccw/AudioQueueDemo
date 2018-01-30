@@ -61,11 +61,12 @@
     // AVAudioSessionCategoryRecord
     // AVAudioSessionCategoryPlayAndRecord
     //http://www.mamicode.com/info-detail-2019952.html
-    [[AVAudioSession sharedInstance] setActive:YES error:nil];
     [[AVAudioSession sharedInstance]setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionDefaultToSpeaker error:&error];
     if (error != nil) {
         NSLog(@"This is error:%@",error.localizedDescription);
     }
+    [[AVAudioSession sharedInstance] setActive:YES error:nil];
+
      
     recorder = [[AQRecorder alloc]init];
     NSString *docpath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
