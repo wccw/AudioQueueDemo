@@ -33,6 +33,7 @@
 		C622BC6A2011D11F00BEC2E4 /* YGAudioFileStream.m in Sources */ = {isa = PBXBuildFile; fileRef = C622BC692011D11F00BEC2E4 /* YGAudioFileStream.m */; };
 		C622BC6D2015802A00BEC2E4 /* YGAudioOutputQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = C622BC6C2015802A00BEC2E4 /* YGAudioOutputQueue.m */; };
 		C6AE523A20200A1A00729CFD /* YGPCMDataPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C6AE523920200A1A00729CFD /* YGPCMDataPlayer.m */; };
+		C6AE52402022B99300729CFD /* YGAudioUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = C6AE523F2022B99300729CFD /* YGAudioUnit.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -97,6 +98,8 @@
 		C622BC6C2015802A00BEC2E4 /* YGAudioOutputQueue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YGAudioOutputQueue.m; sourceTree = "<group>"; };
 		C6AE523820200A1A00729CFD /* YGPCMDataPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YGPCMDataPlayer.h; sourceTree = "<group>"; };
 		C6AE523920200A1A00729CFD /* YGPCMDataPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YGPCMDataPlayer.m; sourceTree = "<group>"; };
+		C6AE523E2022B99300729CFD /* YGAudioUnit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YGAudioUnit.h; sourceTree = "<group>"; };
+		C6AE523F2022B99300729CFD /* YGAudioUnit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YGAudioUnit.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -210,6 +213,8 @@
 				C622BC62201096D700BEC2E4 /* AudioFilePlayer.m */,
 				C6AE523820200A1A00729CFD /* YGPCMDataPlayer.h */,
 				C6AE523920200A1A00729CFD /* YGPCMDataPlayer.m */,
+				C6AE523E2022B99300729CFD /* YGAudioUnit.h */,
+				C6AE523F2022B99300729CFD /* YGAudioUnit.m */,
 			);
 			path = "Record&Play";
 			sourceTree = "<group>";
@@ -366,6 +371,7 @@
 			files = (
 				C61F05F62008498F00EC3B26 /* AQPlayer.m in Sources */,
 				C61F05C62008493D00EC3B26 /* ViewController.m in Sources */,
+				C6AE52402022B99300729CFD /* YGAudioUnit.m in Sources */,
 				C61F05D12008493E00EC3B26 /* main.m in Sources */,
 				C61F05C32008493D00EC3B26 /* AppDelegate.m in Sources */,
 				C61F05F92008499D00EC3B26 /* AQRecorderAndPlayer.m in Sources */,

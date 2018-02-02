@@ -10,7 +10,7 @@
 #import <AudioToolbox/AudioToolbox.h>
 
 #define QUEUE_BUFFER_COUNT 5
-#define QUEUE_BUFFER_SIZE 3000
+#define QUEUE_BUFFER_SIZE 5000
 
 @interface YGPCMDataPlayer() {
     AudioStreamBasicDescription audioDescription;
@@ -94,7 +94,6 @@
     audioQueue = nil;
     syncLock = nil;
 }
-
 
 
 static void YGAudioQueueOutputCallback(void *inUserData, AudioQueueRef outAQ, AudioQueueBufferRef outBuffer) {
