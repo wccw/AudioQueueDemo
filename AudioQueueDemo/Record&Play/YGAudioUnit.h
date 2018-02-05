@@ -10,4 +10,7 @@
 
 @interface YGAudioUnit : NSObject
 
+-(void)start;
+-(void)stop;
+
 @end
