@@ -10,148 +10,164 @@
 #import <AVFoundation/AVFoundation.h>
 #import <AudioToolbox/AudioToolbox.h>
 
+struct CallbackData {
+   AudioUnit unit;
+} cd;
+
 @interface YGAudioUnit() {
-    AudioUnit IOAudioUnit;
+    AudioUnit ioUnit;
 }
+
 @end
 
 @implementation YGAudioUnit
 
 -(instancetype)init {
-    if (self = [super init]) {
-        [self setSession];
-        [self setUnit];
+    self = [super init];
+    if (self) {
+        NSLog(@"start audio unit");
+        [self setupAudioSession];
+        [self setupIOUnit];
     }
     return self;
 }
 
 -(void)start {
-    OSStatus status = AudioOutputUnitStart(IOAudioUnit);
+    OSStatus status = AudioOutputUnitStart(ioUnit);
     if (status != noErr) {
         NSLog(@"audio output unit start fail");
     }
 }
 
 -(void)stop {
-    OSStatus stop = AudioOutputUnitStop(IOAudioUnit);
+    OSStatus stop = AudioOutputUnitStop(ioUnit);
     if (stop != noErr) {
         NSLog(@"audio output unit stop fail");
     }
 }
 
-
-
-static OSStatus MyAURenderCallBack(void                       *inRefCon,
-                                   AudioUnitRenderActionFlags *ioActionFlags,
-                                   const AudioTimeStamp       *inTimeStamp,
-                                   UInt32                     inBusNumber,
-                                   UInt32                     inNumberFrames,
-                                   AudioBufferList            *ioData) {
-    YGAudioUnit *audioUnit = (__bridge YGAudioUnit *)(inRefCon);
-    return 0;
-}
-
--(void)setSession {
-    
-    AVAudioSession *session = [AVAudioSession sharedInstance];
+-(void)setupAudioSession {
+    NSLog(@"start audio session");
+    AVAudioSession *sessionInstance = [AVAudioSession sharedInstance];
     
     NSError *error = nil;
-    [session setCategory:AVAudioSessionCategoryPlayAndRecord error:&error];
+    [sessionInstance setCategory:AVAudioSessionCategoryPlayAndRecord error:&error];
     if (error) {
-        NSLog(@"set category fail");
+        NSLog(@"set session category fail");
         return;
     }
     
     NSTimeInterval bufferDuration = .005;
-    [session setPreferredIOBufferDuration:bufferDuration error:&error];
+    [sessionInstance setPreferredIOBufferDuration:bufferDuration error:&error];
     if (error) {
         NSLog(@"set session buffer duration fail");
         return;
     }
-    [session setActive:YES error:nil];
+    
+    [sessionInstance setPreferredSampleRate:44100 error:&error];
+    if (error) {
+        NSLog(@"set setssion sample rate fail");
+        return;
+    }
+    [sessionInstance setActive:YES error:nil];
 }
 
--(void)setUnit {
+
+-(void)setupIOUnit {
+    NSLog(@"start io unit");
     
     //create a new instance of Remote IO
-    AudioComponentDescription IOUnitDescription;
-    IOUnitDescription.componentType = kAudioUnitType_Output;
-    IOUnitDescription.componentSubType = kAudioUnitSubType_RemoteIO;
-    IOUnitDescription.componentManufacturer = kAudioUnitManufacturer_Apple;
-    IOUnitDescription.componentFlags = 0;
-    IOUnitDescription.componentFlagsMask = 0;
+    AudioComponentDescription unitDescritpion;
+    unitDescritpion.componentType = kAudioUnitType_Output;
+    unitDescritpion.componentSubType = kAudioUnitSubType_RemoteIO;
+    unitDescritpion.componentManufacturer = kAudioUnitManufacturer_Apple;
+    unitDescritpion.componentFlags = 0;
+    unitDescritpion.componentFlagsMask = 0;
     
-    AudioComponent IOUnitComponent = AudioComponentFindNext(NULL, &IOUnitDescription);
-    OSStatus status = AudioComponentInstanceNew(IOUnitComponent, &IOAudioUnit);
+    AudioComponent component = AudioComponentFindNext(NULL, &unitDescritpion);
+    OSStatus status = AudioComponentInstanceNew(component, &ioUnit);
     if (status != noErr) {
-        NSLog(@"set audio component instance fail");
+        NSLog(@"set AudioComponentInstanceNew fail");
         return;
     }
 
-    //enable io for input
+    //enable IO
     UInt32 one = 1;
-    status = AudioUnitSetProperty(IOAudioUnit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Input, 1, &one, sizeof(one));
+    status = AudioUnitSetProperty(ioUnit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Input, 1, &one, sizeof(one));
     if (status != noErr) {
         NSLog(@"set audio unit property enable io fail");
         return;
     }
     
-    //enable io for output
-    status = AudioUnitSetProperty(IOAudioUnit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Output, 0, &one, sizeof(one));
+    status = AudioUnitSetProperty(ioUnit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Output, 0, &one, sizeof(one));
     if (status != noErr) {
         NSLog(@"set audio unit property enable io fail");
         return;
     }
     
     //audio format
+    
     AudioStreamBasicDescription desc = {0};
     desc.mSampleRate = 44100;
     desc.mFormatID = kAudioFormatLinearPCM;
-    desc.mFormatFlags = kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
+    desc.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
     desc.mFramesPerPacket = 1;
     desc.mChannelsPerFrame = 1;
-    desc.mBytesPerFrame = desc.mBytesPerPacket = 0;
+    desc.mBytesPerFrame = desc.mBytesPerPacket = 16;
     desc.mReserved = 0;
     
-    status = AudioUnitSetProperty(IOAudioUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 1, &desc, sizeof(desc));
+    /*
+    status = AudioUnitSetProperty(ioUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 1, &desc, sizeof(desc));
     if (status != noErr) {
         NSLog(@"set audio unit property format fail");
         return;
     }
     
-    status = AudioUnitSetProperty(IOAudioUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &desc, sizeof(desc));
+    status = AudioUnitSetProperty(ioUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &desc, sizeof(desc));
     if (status != noErr) {
         NSLog(@"set audio unit property format fail");
         return;
     }
+     */
     
     UInt32 maxFramesPerSlice = 4096;
-    status = AudioUnitSetProperty(IOAudioUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Global, 0, &maxFramesPerSlice, sizeof(UInt32));
+    status = AudioUnitSetProperty(ioUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Global, 0, &maxFramesPerSlice, sizeof(UInt32));
     if (status != noErr) {
         NSLog(@"set max num frames per slice fail");
         return;
     }
     
-    status = AudioUnitSetProperty(IOAudioUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, 0, &MyAURenderCallBack, sizeof(MyAURenderCallBack));
+    UInt32 propSize = sizeof(UInt32);
+    AudioUnitGetProperty(ioUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Global, 0, &maxFramesPerSlice, &propSize);
+    
+    cd.unit = ioUnit;
+    
+    AURenderCallbackStruct renderCallbackStruct;
+    renderCallbackStruct.inputProcRefCon = playCallback;
+    renderCallbackStruct.inputProcRefCon = NULL;
+    status = AudioUnitSetProperty(ioUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, 0, &renderCallbackStruct, sizeof(renderCallbackStruct));
     if (status != noErr) {
-        NSLog(@"set render callback fail");
+        NSLog(@"set render play callback fail");
         return;
     }
     
-    AURenderCallbackStruct renderCallback;
-    renderCallback.inputProc = MyAURenderCallBack;
-    renderCallback.inputProcRefCon = NULL;
-    status = AudioUnitSetProperty(IOAudioUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, 0, &renderCallback, sizeof(renderCallback));
+    status = AudioUnitInitialize(ioUnit);
     if (status != noErr) {
-        NSLog(@"set callback fail");
+        NSLog(@"set unit initialize fail %d",status);
         return;
     }
+    NSLog(@"audio unit finished");
+}
+
+static OSStatus playCallback(void                       *inRefCon,
+                             AudioUnitRenderActionFlags *ioActionFlags,
+                             const AudioTimeStamp       *inTimeStamp,
+                             UInt32                     inBusNumber,
+                             UInt32                     inNumberFrames,
+                             AudioBufferList            *ioData) {
     
-    status = AudioUnitInitialize(IOAudioUnit);
-    if (status != noErr) {
-        NSLog(@"set unit initialize fail");
-        return;
-    }
+    AudioUnitRender(cd.unit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, ioData);
+    return 0;
 }
 
 @end

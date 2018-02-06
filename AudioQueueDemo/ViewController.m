@@ -14,6 +14,8 @@
 #import "AQRecorder.h"
 #import "PCMFilePlayer.h"
 
+#import "YGAudioUnit.h"
+
 
 @interface ViewController ()<audioFileStreamDelegate>
 {
@@ -23,14 +25,15 @@
     YGAudioOutputQueue *outQueue;
     FILE *file;
     UInt64 fileLength;
+    
+    YGAudioUnit *audioUnit;
 }
 @end
 
 @implementation ViewController
 
 -(void)audioStreamPacketData:(NSData *)data withDescriptions:(AudioStreamPacketDescription*)packetsDes {
-     //[self performSelector:@selector(delayMethod) withObject:nil afterDelay:0];
-    [outQueue playWithPackets:data withDescriptions:packetsDes];
+     [outQueue playWithPackets:data withDescriptions:packetsDes];
 }
 
 -(void)audioStreamPacketData:(NSData *)data withDescription:(AudioStreamPacketDescription)packetDes {
@@ -43,8 +46,7 @@
 
 //open file
 -(void)openAudioFile {
-    //mp3(true) ,m4a(true), flac(ture),wav(false)
-    //caf(true) aac(ture)
+   
     NSString *path = [[NSBundle mainBundle]pathForResource:@"PCMSample" ofType:@"pcm"];
     NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:path];
     fileLength = [[handle availableData]length];
@@ -56,10 +58,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    /*
     NSError *error;
-    // AVAudioSessionCategoryPlayback
-    // AVAudioSessionCategoryRecord
-    // AVAudioSessionCategoryPlayAndRecord
     //http://www.mamicode.com/info-detail-2019952.html
     [[AVAudioSession sharedInstance]setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionDefaultToSpeaker error:&error];
     if (error != nil) {
@@ -74,17 +74,13 @@
     player = [[PCMFilePlayer alloc]initWithPcmFilePath:filePath];
     //[self openAudioFile];
     //stream = [[YGAudioFileStream alloc]initWithDelegate:self];
+     */
+    
+    audioUnit = [[YGAudioUnit alloc]init];
 }
 
 - (IBAction)recorderplayerStart:(id)sender {
-    int length = 3000;
-    for (int i = 0; i < fileLength; i = i + length) {
-        void *pcmDataBuffer = malloc(length);
-        fread(pcmDataBuffer, 1, length, file);
-        NSData *audioData = [NSData dataWithBytes:pcmDataBuffer length:length];
-        free(pcmDataBuffer);
-        [stream parseData:audioData];
-    }
+    [audioUnit start];
 }
 
 - (IBAction)recorderplayerStop:(id)sender {
