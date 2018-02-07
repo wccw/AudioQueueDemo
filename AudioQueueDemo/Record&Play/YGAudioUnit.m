@@ -33,6 +33,7 @@ struct CallbackData {
 }
 
 -(void)start {
+    NSLog(@"start");
     OSStatus status = AudioOutputUnitStart(ioUnit);
     if (status != noErr) {
         NSLog(@"audio output unit start fail");
@@ -68,6 +69,11 @@ struct CallbackData {
     if (error) {
         NSLog(@"set session sample rate fail");
         return;
+    }
+    
+    [sessionInstance setPreferredInputNumberOfChannels:1 error:&error];
+    if (error) {
+        NSLog(@"set session number of channels fail");
     }
     
     [sessionInstance setActive:YES error:&error];
@@ -144,16 +150,16 @@ struct CallbackData {
     
     cd.unit = ioUnit;
     
-    /*
+    
     AURenderCallbackStruct renderCallbackStruct;
-    renderCallbackStruct.inputProcRefCon = playCallback;
+    renderCallbackStruct.inputProcRefCon = performCallback;
     renderCallbackStruct.inputProcRefCon = NULL;
     status = AudioUnitSetProperty(ioUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, 0, &renderCallbackStruct, sizeof(renderCallbackStruct));
     if (status != noErr) {
         NSLog(@"set render play callback fail");
         return;
     }
-     */
+
     
     status = AudioUnitInitialize(ioUnit);
     if (status != noErr) {
@@ -163,14 +169,15 @@ struct CallbackData {
     NSLog(@"audio unit finished");
 }
 
-static OSStatus playCallback(void                       *inRefCon,
+static OSStatus performCallback(void                       *inRefCon,
                              AudioUnitRenderActionFlags *ioActionFlags,
                              const AudioTimeStamp       *inTimeStamp,
                              UInt32                     inBusNumber,
                              UInt32                     inNumberFrames,
                              AudioBufferList            *ioData) {
     
-    //AudioUnitRender(cd.unit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, ioData);
+    NSLog(@"data is data");
+    AudioUnitRender(cd.unit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, ioData);
     return 0;
 }
 
